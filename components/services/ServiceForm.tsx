@@ -6,7 +6,6 @@ import {
   TextField,
   Button,
   Avatar,
-  Typography,
   Tabs,
   Tab,
   Paper,
@@ -22,7 +21,6 @@ import {
   OutlinedInput,
   ListItemText,
   Checkbox,
-  Divider,
 } from '@mui/material';
 import {
   PhotoCamera as PhotoCameraIcon,
@@ -36,15 +34,11 @@ import {
   People as PeopleIcon,
   Visibility as VisibilityIcon,
   VideoLibrary as VideoIcon,
-  CalendarToday as CalendarIcon,
   Link as LinkIcon,
   Search as SearchIcon,
   Notes as NotesIcon,
-  CheckCircle as CheckCircleIcon,
-  Error as ErrorIcon,
 } from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
-import BrandButton from '@/components/shared/BrandButton';
 import BrandTypography from '@/components/shared/BrandTypography';
 import { Service } from '@/lib/serviceService';
 import { Category } from '@/lib/categoryService';
@@ -223,9 +217,7 @@ export default function ServiceForm({ service, onSave, onCancel, categories, sta
     }
   );
 
-  const [errors, setErrors] = useState<Partial<Record<keyof ServiceFormData, string>>>({});
   const [activeTab, setActiveTab] = useState(0);
-  const [touched, setTouched] = useState<Partial<Record<keyof ServiceFormData, boolean>>>({});
 
   // Dynamic field handlers
   const [newDuration, setNewDuration] = useState({ duration: 30, price: 0 });

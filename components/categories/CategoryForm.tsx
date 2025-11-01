@@ -6,21 +6,11 @@ import {
   TextField,
   Button,
   Avatar,
-  Typography,
   Tabs,
   Tab,
   Paper,
   FormControlLabel,
   Switch,
-  Alert,
-  InputAdornment,
-  Chip,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Divider,
-  Grid,
 } from '@mui/material';
 import {
   PhotoCamera as PhotoCameraIcon,
@@ -33,12 +23,9 @@ import {
   Search as SearchIcon,
   Link as LinkIcon,
   Notes as NotesIcon,
-  CheckCircle as CheckCircleIcon,
-  Error as ErrorIcon,
   DragIndicator as DragIcon,
 } from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
-import BrandButton from '@/components/shared/BrandButton';
 import BrandTypography from '@/components/shared/BrandTypography';
 import { Category } from '@/lib/categoryService';
 
@@ -301,12 +288,6 @@ export default function CategoryForm({ category, onSave, onCancel }: CategoryFor
 
   const getFieldError = (field: keyof CategoryFormData) => {
     return touched[field] ? errors[field] : undefined;
-  };
-
-  const getFieldHelperText = (field: keyof CategoryFormData, defaultText?: string) => {
-    const error = getFieldError(field);
-    if (error) return error;
-    return defaultText;
   };
 
   return (

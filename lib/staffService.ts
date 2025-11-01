@@ -250,7 +250,8 @@ export class StaffService {
   }
 
   // Upload staff picture to Cloudflare
-  static async uploadStaffPicture(file: File, staffId: string): Promise<string> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static async uploadStaffPicture(file: File, _staffId: string): Promise<string> {
     try {
       const imageUrl = await uploadDataUrlToCloudflare(URL.createObjectURL(file));
       console.log('Staff picture uploaded to Cloudflare:', imageUrl);
