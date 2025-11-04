@@ -12,6 +12,17 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase';
 
+// Generate slug from name
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .trim();
+}
+
 export interface ServerCategory {
   id: string;
   name: string;
@@ -242,27 +253,32 @@ export async function getServerStaff(): Promise<ServerStaffMember[]> {
     
     const querySnapshot = await getDocs(q);
 
-    const staff = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      name: doc.data().name,
-      title: doc.data().title,
-      slug: doc.data().slug,
-      picture: doc.data().picture,
-      heroImage: doc.data().heroImage,
-      shortDescription: doc.data().shortDescription,
-      shortBio: doc.data().shortBio,
-      fullBiography: doc.data().fullBiography,
-      credentials: doc.data().credentials,
-      areasOfSpecialization: doc.data().areasOfSpecialization || [],
-      yearsOfExperience: doc.data().yearsOfExperience,
-      spokenLanguages: doc.data().spokenLanguages || [],
-      education: doc.data().education || [],
-      associations: doc.data().associations,
-      email: doc.data().email,
-      phone: doc.data().phone,
-      bookingLink: doc.data().bookingLink,
-      order: doc.data().order ?? 0,
-    }));
+    const staff = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      // Generate slug from name if not provided
+      const slug = data.slug || generateSlug(data.name);
+      return {
+        id: doc.id,
+        name: data.name,
+        title: data.title,
+        slug: slug,
+        picture: data.picture,
+        heroImage: data.heroImage,
+        shortDescription: data.shortDescription,
+        shortBio: data.shortBio,
+        fullBiography: data.fullBiography,
+        credentials: data.credentials,
+        areasOfSpecialization: data.areasOfSpecialization || [],
+        yearsOfExperience: data.yearsOfExperience,
+        spokenLanguages: data.spokenLanguages || [],
+        education: data.education || [],
+        associations: data.associations,
+        email: data.email,
+        phone: data.phone,
+        bookingLink: data.bookingLink,
+        order: data.order ?? 0,
+      };
+    });
 
     return staff as ServerStaffMember[];
   } catch (error) {
@@ -274,28 +290,33 @@ export async function getServerStaff(): Promise<ServerStaffMember[]> {
       const querySnapshot = await getDocs(q);
 
       const staff = querySnapshot.docs
-        .map(doc => ({
-          id: doc.id,
-          name: doc.data().name,
-          title: doc.data().title,
-          slug: doc.data().slug,
-          picture: doc.data().picture,
-          heroImage: doc.data().heroImage,
-          shortDescription: doc.data().shortDescription,
-          shortBio: doc.data().shortBio,
-          fullBiography: doc.data().fullBiography,
-          credentials: doc.data().credentials,
-          areasOfSpecialization: doc.data().areasOfSpecialization || [],
-          yearsOfExperience: doc.data().yearsOfExperience,
-          spokenLanguages: doc.data().spokenLanguages || [],
-          education: doc.data().education || [],
-          associations: doc.data().associations,
-          email: doc.data().email,
-          phone: doc.data().phone,
-          bookingLink: doc.data().bookingLink,
-          isActive: doc.data().isActive,
-          order: doc.data().order ?? 0,
-        }))
+        .map(doc => {
+          const data = doc.data();
+          // Generate slug from name if not provided
+          const slug = data.slug || generateSlug(data.name);
+          return {
+            id: doc.id,
+            name: data.name,
+            title: data.title,
+            slug: slug,
+            picture: data.picture,
+            heroImage: data.heroImage,
+            shortDescription: data.shortDescription,
+            shortBio: data.shortBio,
+            fullBiography: data.fullBiography,
+            credentials: data.credentials,
+            areasOfSpecialization: data.areasOfSpecialization || [],
+            yearsOfExperience: data.yearsOfExperience,
+            spokenLanguages: data.spokenLanguages || [],
+            education: data.education || [],
+            associations: data.associations,
+            email: data.email,
+            phone: data.phone,
+            bookingLink: data.bookingLink,
+            isActive: data.isActive,
+            order: data.order ?? 0,
+          };
+        })
         .filter(member => member.isActive)
         .sort((a, b) => a.order - b.order);
 

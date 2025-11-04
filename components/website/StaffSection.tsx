@@ -111,7 +111,7 @@ export default function StaffSection() {
             <Card
               key={member.id}
               component="a"
-              href={`/staff/${member.slug || member.id}`}
+              href={`/staff/${member.slug}`}
               sx={{
                 height: '100%',
                 display: 'flex',

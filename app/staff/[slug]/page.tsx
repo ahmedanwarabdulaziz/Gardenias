@@ -321,7 +321,7 @@ export async function generateStaticParams() {
   const staff = await PublicStaffService.getPublicStaff();
   
   return staff.map((member) => ({
-    slug: member.slug || member.id,
+    slug: member.slug, // Always use slug (generated from name if not provided)
   }));
 }
 

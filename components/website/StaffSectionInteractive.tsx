@@ -403,7 +403,7 @@ export default function StaffSectionInteractive({ initialStaff }: StaffSectionIn
 
                 {/* Read More Link */}
                 <Link
-                  href={`/staff/${selectedStaff.slug || selectedStaff.id}`}
+                  href={`/staff/${selectedStaff.slug}`}
                   style={{ textDecoration: 'none' }}
                 >
                   <Box

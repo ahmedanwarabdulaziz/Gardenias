@@ -26,23 +26,29 @@ interface ServicesSectionProps {
 
 export default function ServicesSection({ initialCategories, initialServices }: ServicesSectionProps) {
   // Convert server types to client types (they're compatible)
+  // Filter out categories that have no services
+  const allServices = initialServices as PublicService[];
+  const categoriesWithServices = (initialCategories as PublicCategory[]).filter(category => 
+    allServices.some(service => service.categoryId === category.id)
+  );
+  
   // Keep as state in case we need to update them later (e.g., real-time updates)
-  const [categories] = useState<PublicCategory[]>(initialCategories as PublicCategory[]);
-  const [services] = useState<PublicService[]>(initialServices as PublicService[]);
+  const [categories] = useState<PublicCategory[]>(categoriesWithServices);
+  const [services] = useState<PublicService[]>(allServices);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [displayedCategory, setDisplayedCategory] = useState<string>(''); // Category currently displayed
   const [isTransitioning, setIsTransitioning] = useState(false);
   const servicesListRef = useRef<HTMLDivElement>(null);
   const shouldScrollRef = useRef(false);
 
-  // Set first category as default on mount
+  // Set first category as default on mount (only if it has services)
   useEffect(() => {
-    if (initialCategories.length > 0 && !selectedCategory && !displayedCategory) {
-      const firstCategoryId = initialCategories[0].id;
+    if (categories.length > 0 && !selectedCategory && !displayedCategory) {
+      const firstCategoryId = categories[0].id;
       setSelectedCategory(firstCategoryId);
       setDisplayedCategory(firstCategoryId);
     }
-  }, [initialCategories]);
+  }, [categories, selectedCategory, displayedCategory]);
 
   // Use displayedCategory for rendering to prevent content flash during transition
   const filteredServices = services.filter(service => service.categoryId === displayedCategory);

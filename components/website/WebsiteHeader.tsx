@@ -54,6 +54,13 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
     setMobileOpen(!mobileOpen);
   };
 
+  const handleMenuClose = () => {
+    setServicesMenuOpen(false);
+    setStaffMenuOpen(false);
+    setMobileServicesOpen(false);
+    setMobileStaffOpen(false);
+  };
+
   const drawer = (
     <Box sx={{ textAlign: 'center', py: 1 }}>
       <Box sx={{ mb: 1, px: 1, display: 'flex', justifyContent: 'center' }} onClick={handleDrawerToggle}>
@@ -150,7 +157,10 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                           key={service.id}
                           component={Link}
                           href={`/services/${service.slug || service.id}`}
-                          onClick={handleDrawerToggle}
+                          onClick={() => {
+                            handleDrawerToggle();
+                            setMobileServicesOpen(false);
+                          }}
                           sx={{
                             py: 1,
                             pl: 3,
@@ -183,8 +193,11 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                   <ListItemButton
                     key={member.id}
                     component={Link}
-                    href={`/staff/${member.slug || member.id}`}
-                    onClick={handleDrawerToggle}
+                    href={`/staff/${member.slug}`}
+                    onClick={() => {
+                      handleDrawerToggle();
+                      setMobileStaffOpen(false);
+                    }}
                     sx={{
                       py: 1.5,
                       pl: 3,
@@ -450,6 +463,7 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                                         key={service.id}
                                         href={`/services/${service.slug || service.id}`}
                                         style={{ textDecoration: 'none' }}
+                                        onClick={handleMenuClose}
                                       >
                                         <Box
                                           sx={{
@@ -503,7 +517,7 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
 
                         {/* View All Services Link */}
                         <Divider sx={{ my: 3 }} />
-                        <Link href="/services" style={{ textDecoration: 'none' }}>
+                        <Link href="/services" style={{ textDecoration: 'none' }} onClick={handleMenuClose}>
                           <Box
                             sx={{
                               display: 'flex',
@@ -587,8 +601,9 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                           {staff.map((member) => (
                             <Link
                               key={member.id}
-                              href={`/staff/${member.slug || member.id}`}
+                              href={`/staff/${member.slug}`}
                               style={{ textDecoration: 'none' }}
+                              onClick={handleMenuClose}
                             >
                               <Box
                                 sx={{
@@ -661,7 +676,7 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
 
                         {/* View All Staff Link */}
                         <Divider sx={{ my: 3 }} />
-                        <Link href="/staff" style={{ textDecoration: 'none' }}>
+                        <Link href="/staff" style={{ textDecoration: 'none' }} onClick={handleMenuClose}>
                           <Box
                             sx={{
                               display: 'flex',

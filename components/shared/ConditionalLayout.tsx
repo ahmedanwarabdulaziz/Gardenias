@@ -6,13 +6,20 @@ import WebsiteHeaderWrapper from '@/components/website/WebsiteHeaderWrapper';
 import WebsiteFooter from '@/components/website/WebsiteFooter';
 import ContactForm from '@/components/contact/ContactForm';
 import ContactInfo from '@/components/contact/ContactInfo';
+import { ServerCategory, ServerService, ServerStaffMember } from '@/lib/serverDataService';
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
+  initialCategories: ServerCategory[];
+  initialServices: ServerService[];
+  initialStaff: ServerStaffMember[];
 }
 
 export default function ConditionalLayout({ 
-  children
+  children,
+  initialCategories,
+  initialServices,
+  initialStaff,
 }: ConditionalLayoutProps) {
   const pathname = usePathname();
   
@@ -26,7 +33,11 @@ export default function ConditionalLayout({
   
   return (
     <>
-      <WebsiteHeaderWrapper />
+      <WebsiteHeaderWrapper 
+        initialCategories={initialCategories}
+        initialServices={initialServices}
+        initialStaff={initialStaff}
+      />
       <main>{children}</main>
       
       {/* Contact Section - Show on all pages except contact page */}

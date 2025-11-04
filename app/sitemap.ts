@@ -61,9 +61,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const staff = await PublicStaffService.getPublicStaff();
     staffPages = staff
-      .filter(member => member.slug || member.id)
+      .filter(member => member.slug) // Only include staff with slugs
       .map(member => ({
-        url: `${baseUrl}/staff/${member.slug || member.id}`,
+        url: `${baseUrl}/staff/${member.slug}`,
         lastModified: new Date(),
         changeFrequency: 'monthly' as const,
         priority: 0.7,

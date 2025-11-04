@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import ThemeProvider from '@/components/ThemeProvider';
 import ConditionalLayout from '@/components/shared/ConditionalLayout';
+import { getServerNavigationData, ServerCategory, ServerService, ServerStaffMember } from '@/lib/serverDataService';
 import '@/styles/globals.css';
 import '@/styles/accessibility.css';
 
@@ -43,11 +44,26 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Fetch navigation data on the server for optimal performance
+  let categories: ServerCategory[] = [];
+  let services: ServerService[] = [];
+  let staff: ServerStaffMember[] = [];
+  
+  try {
+    const navData = await getServerNavigationData();
+    categories = navData.categories || [];
+    services = navData.services || [];
+    staff = navData.staff || [];
+  } catch (error) {
+    console.error('Error fetching navigation data:', error);
+    // Use empty arrays as fallback
+  }
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -66,7 +82,11 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning={true} style={{ fontFamily: '"Source Sans Pro", sans-serif' }}>
         <ThemeProvider>
-          <ConditionalLayout>
+          <ConditionalLayout 
+            initialCategories={categories}
+            initialServices={services}
+            initialStaff={staff}
+          >
             {children}
           </ConditionalLayout>
         </ThemeProvider>

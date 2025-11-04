@@ -1,39 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import WebsiteHeader from './WebsiteHeader';
-import { PublicCategoryService, PublicCategory, PublicService } from '@/lib/publicCategoryService';
-import { PublicStaffService, PublicStaffMember } from '@/lib/publicStaffService';
+import { ServerCategory, ServerService, ServerStaffMember } from '@/lib/serverDataService';
 
-export default function WebsiteHeaderWrapper() {
-  const [categories, setCategories] = useState<PublicCategory[]>([]);
-  const [services, setServices] = useState<PublicService[]>([]);
-  const [staff, setStaff] = useState<PublicStaffMember[]>([]);
+interface WebsiteHeaderWrapperProps {
+  initialCategories: ServerCategory[];
+  initialServices: ServerService[];
+  initialStaff: ServerStaffMember[];
+}
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [categoriesData, servicesData, staffData] = await Promise.all([
-          PublicCategoryService.getPublicCategories(),
-          PublicCategoryService.getPublicServices(),
-          PublicStaffService.getPublicStaff(),
-        ]);
-        setCategories(categoriesData);
-        setServices(servicesData);
-        setStaff(staffData);
-      } catch (error) {
-        console.error('Error fetching navigation data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
+export default function WebsiteHeaderWrapper({
+  initialCategories,
+  initialServices,
+  initialStaff,
+}: WebsiteHeaderWrapperProps) {
   return (
     <WebsiteHeader 
-      initialCategories={categories}
-      initialServices={services}
-      initialStaff={staff}
+      initialCategories={initialCategories}
+      initialServices={initialServices}
+      initialStaff={initialStaff}
     />
   );
 }
