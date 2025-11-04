@@ -1,15 +1,39 @@
-'use client';
-
 import { Box, Container, Typography, Card, CardContent, Button } from '@mui/material';
+import Script from 'next/script';
 import AboutHeroSection from '@/components/about/AboutHeroSection';
 import StaffSectionInteractive from '@/components/website/StaffSectionInteractive';
 import Link from 'next/link';
 import { Calendar } from 'phosphor-react';
+import { generateMetadata as generateSEOMetadata } from '@/lib/seo/utils';
+import { generateBreadcrumbSchema } from '@/lib/seo/utils';
+import { SITE_CONFIG } from '@/lib/seo/config';
+
+export async function generateMetadata() {
+  return generateSEOMetadata({
+    title: 'About Us - Gardenias Healthcare Clinic',
+    description: 'Learn about Gardenias Healthcare Clinic in Milton, Ontario. Our mission is to help you achieve lasting wellness through personalized care, evidence-based therapies, and genuine human connection.',
+    keywords: ['about Gardenias Healthcare', 'healthcare clinic Milton', 'Milton healthcare', 'medical clinic Milton Ontario'],
+    url: 'https://www.gardenias-healthcare.net/about',
+  });
+}
 
 export default function AboutPage() {
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: `${SITE_CONFIG.baseUrl}/` },
+    { name: 'About Us', url: `${SITE_CONFIG.baseUrl}/about` },
+  ]);
+
   return (
-    <Box>
-      {/* Hero Section */}
+    <>
+      {/* Structured Data */}
+      <Script
+        id="breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      
+      <Box>
+        {/* Hero Section */}
       <AboutHeroSection
         title="Healing Begins with Understanding"
         subtitle="At Gardenias Healthcare Clinic, we believe healing is not just about treatment — it&apos;s about understanding the whole person. Our mission is to help you achieve lasting wellness through personalized care, evidence-based therapies, and genuine human connection."
@@ -552,5 +576,6 @@ export default function AboutPage() {
         </Container>
       </Box>
     </Box>
+    </>
   );
 }

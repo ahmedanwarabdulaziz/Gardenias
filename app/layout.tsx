@@ -9,6 +9,15 @@ export const metadata: Metadata = {
   title: 'Gardenias Healthcare - Professional Medical Services',
   description: 'Professional healthcare services with modern medical facilities. Expert doctors, advanced treatments, and compassionate care for all your medical needs.',
   keywords: 'healthcare, medical, doctor, hospital, clinic, medical treatment, healthcare provider, medical consultation, emergency care, specialized medicine',
+  icons: {
+    icon: [
+      { url: '/images/logo.png', type: 'image/png' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    apple: [
+      { url: '/images/logo.png', type: 'image/png' },
+    ],
+  },
   other: {
     'cache-control': 'no-cache, no-store, must-revalidate',
     'pragma': 'no-cache',
@@ -24,8 +33,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#008d80" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

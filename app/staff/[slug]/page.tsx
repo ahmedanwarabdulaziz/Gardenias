@@ -1,14 +1,55 @@
 import { notFound } from 'next/navigation';
 import { Box, Container, Typography, Chip, Card, CardContent } from '@mui/material';
+import Script from 'next/script';
 import StaffHeroSection from '@/components/staff/StaffHeroSection';
 import StaffServicesSection from '@/components/staff/StaffServicesSection';
 import { PublicStaffService } from '@/lib/publicStaffService';
 import { PublicCategoryService } from '@/lib/publicCategoryService';
+import { generateMetadata as generateSEOMetadata } from '@/lib/seo/utils';
+import { generatePersonSchema, generateBreadcrumbSchema } from '@/lib/seo/utils';
+import { SITE_CONFIG } from '@/lib/seo/config';
 
 interface StaffPageProps {
   params: {
     slug: string;
   };
+}
+
+export async function generateMetadata({ params }: StaffPageProps) {
+  const { slug } = params;
+  
+  try {
+    const staff = await PublicStaffService.getStaffBySlug(slug);
+    
+    if (!staff) {
+      return generateSEOMetadata();
+    }
+
+    const title = `${staff.name} - ${staff.title} | Gardenias Healthcare`;
+    const description = staff.shortBio || staff.shortDescription || `${staff.title} at Gardenias Healthcare in Milton, Ontario.`;
+    const keywords = [
+      staff.name,
+      staff.title,
+      'Gardenias Healthcare',
+      'Milton',
+      'Ontario',
+      ...(staff.areasOfSpecialization || []),
+    ];
+    const url = `${SITE_CONFIG.baseUrl}/staff/${slug}`;
+    const image = staff.picture || staff.heroImage || SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logo.png`;
+
+    return generateSEOMetadata({
+      title,
+      description,
+      keywords,
+      url,
+      image,
+      type: 'website',
+      author: staff.name,
+    });
+  } catch (error) {
+    return generateSEOMetadata();
+  }
 }
 
 export default async function StaffPage({ params }: StaffPageProps) {
@@ -33,9 +74,42 @@ export default async function StaffPage({ params }: StaffPageProps) {
   // Filter categories to only those that have services from this staff member
   const categories = allCategories.filter(cat => serviceCategoryIds.includes(cat.id));
 
+  const staffUrl = `${SITE_CONFIG.baseUrl}/staff/${slug}`;
+  
+  // Generate structured data
+  const personSchema = generatePersonSchema({
+    name: staff.name,
+    jobTitle: staff.title,
+    description: staff.fullBiography || staff.shortBio || staff.shortDescription,
+    url: staffUrl,
+    image: staff.picture || staff.heroImage,
+    credentials: staff.credentials,
+    email: staff.email,
+    telephone: staff.phone,
+  });
+
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: `${SITE_CONFIG.baseUrl}/` },
+    { name: 'Staff', url: `${SITE_CONFIG.baseUrl}/staff` },
+    { name: staff.name, url: staffUrl },
+  ]);
+
   return (
-    <Box>
-      {/* Hero Section */}
+    <>
+      {/* Structured Data */}
+      <Script
+        id="person-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+      />
+      <Script
+        id="breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      
+      <Box>
+        {/* Hero Section */}
       <StaffHeroSection
         name={staff.name}
         title={staff.title}
@@ -238,6 +312,7 @@ export default async function StaffPage({ params }: StaffPageProps) {
         services={services}
       />
     </Box>
+    </>
   );
 }
 

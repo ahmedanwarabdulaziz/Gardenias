@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Box, Container, Typography, Card, CardContent, Chip, CircularProgress } from '@mui/material';
 import Link from 'next/link';
 import { FirstAid, Heart, Activity, Brain, Baby, Barbell } from 'phosphor-react';
@@ -22,8 +22,13 @@ export default function ServicesSection() {
   const [categories, setCategories] = useState<PublicCategory[]>([]);
   const [services, setServices] = useState<PublicService[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [displayedCategory, setDisplayedCategory] = useState<string>(''); // Category currently displayed
   const [loading, setLoading] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const servicesListRef = useRef<HTMLDivElement>(null);
+  const shouldScrollRef = useRef(false);
 
+  // Fetch data only once on mount
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -38,7 +43,9 @@ export default function ServicesSection() {
         
         // Set first category as default
         if (categoriesData.length > 0 && !selectedCategory) {
-          setSelectedCategory(categoriesData[0].id);
+          const firstCategoryId = categoriesData[0].id;
+          setSelectedCategory(firstCategoryId);
+          setDisplayedCategory(firstCategoryId);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -48,10 +55,40 @@ export default function ServicesSection() {
     };
 
     fetchData();
-  }, [selectedCategory]);
+  }, []); // Empty dependency array - only run once on mount
 
-  const filteredServices = services.filter(service => service.categoryId === selectedCategory);
-  const currentCategory = categories.find(c => c.id === selectedCategory);
+  // Use displayedCategory for rendering to prevent content flash during transition
+  const filteredServices = services.filter(service => service.categoryId === displayedCategory);
+  const currentCategory = categories.find(c => c.id === displayedCategory);
+
+  // Handle smooth transition and scroll when category changes
+  useEffect(() => {
+    if (shouldScrollRef.current && selectedCategory && selectedCategory !== displayedCategory) {
+      // Start fade out transition
+      setIsTransitioning(true);
+      
+      // After fade out completes, update displayed content
+      setTimeout(() => {
+        setDisplayedCategory(selectedCategory);
+        
+        // Fade in new content
+        setTimeout(() => {
+          setIsTransitioning(false);
+          
+          // Scroll to services list after transition
+          setTimeout(() => {
+            servicesListRef.current?.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'start',
+              inline: 'nearest'
+            });
+          }, 50);
+        }, 10); // Small delay to ensure DOM update
+      }, 150); // Fade out duration (matches CSS transition)
+      
+      shouldScrollRef.current = false;
+    }
+  }, [selectedCategory, displayedCategory]);
 
   if (loading) {
     return (
@@ -148,14 +185,10 @@ export default function ServicesSection() {
                 >
                   <Card
                     onClick={() => {
-                      setSelectedCategory(category.id);
-                      // Smooth scroll to services list
-                      setTimeout(() => {
-                        const servicesListElement = document.getElementById('services-list');
-                        if (servicesListElement) {
-                          servicesListElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                      }, 100);
+                      if (category.id !== selectedCategory) {
+                        shouldScrollRef.current = true;
+                        setSelectedCategory(category.id);
+                      }
                     }}
                     sx={{
                       height: { xs: 140, md: 160 },
@@ -283,15 +316,27 @@ export default function ServicesSection() {
 
         {/* Services List */}
         <Box
+          ref={servicesListRef}
           id="services-list"
           sx={{
             bgcolor: 'white',
             borderRadius: '16px',
             p: { xs: 3, md: 4 },
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+            scrollMarginTop: '100px', // Add offset for better scrolling
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2 }}>
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              mb: 3, 
+              gap: 2,
+              opacity: isTransitioning ? 0 : 1,
+              transform: isTransitioning ? 'translateY(-10px)' : 'translateY(0)',
+              transition: 'opacity 0.15s ease-in-out, transform 0.15s ease-in-out',
+            }}
+          >
             <Box
               sx={{
                 color: currentCategory?.accentColor || '#008d80',
@@ -331,6 +376,9 @@ export default function ServicesSection() {
                 md: 'repeat(3, 1fr)',
               },
               gap: { xs: 3, md: 4 },
+              opacity: isTransitioning ? 0 : 1,
+              transform: isTransitioning ? 'translateY(10px)' : 'translateY(0)',
+              transition: 'opacity 0.15s ease-in-out, transform 0.15s ease-in-out',
             }}
           >
             {filteredServices.length > 0 ? (

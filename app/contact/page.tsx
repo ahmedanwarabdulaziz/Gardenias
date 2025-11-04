@@ -1,12 +1,38 @@
 import { Box, Container, Typography, Card } from '@mui/material';
+import Script from 'next/script';
 import ContactHeroSection from '@/components/contact/ContactHeroSection';
 import ContactForm from '@/components/contact/ContactForm';
 import ContactInfo from '@/components/contact/ContactInfo';
+import { generateMetadata as generateSEOMetadata } from '@/lib/seo/utils';
+import { generateBreadcrumbSchema } from '@/lib/seo/utils';
+import { SITE_CONFIG } from '@/lib/seo/config';
+
+export async function generateMetadata() {
+  return generateSEOMetadata({
+    title: 'Contact Us - Gardenias Healthcare Clinic Milton',
+    description: 'Contact Gardenias Healthcare in Milton, Ontario. Call us at +1(647) 328-65-63 or email Info@gardenias-healthcare.net. Located at 348 Bronte St South Unit #12, Milton, ON L9T 5B6.',
+    keywords: ['contact Gardenias Healthcare', 'Milton healthcare contact', 'book appointment Milton', 'healthcare clinic Milton'],
+    url: 'https://www.gardenias-healthcare.net/contact',
+  });
+}
 
 export default function ContactPage() {
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: `${SITE_CONFIG.baseUrl}/` },
+    { name: 'Contact', url: `${SITE_CONFIG.baseUrl}/contact` },
+  ]);
+
   return (
-    <Box>
-      {/* Hero Section */}
+    <>
+      {/* Structured Data */}
+      <Script
+        id="breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      
+      <Box>
+        {/* Hero Section */}
       <ContactHeroSection
         title="We&apos;re Here to Help You"
         subtitle="Heal and Feel Better"
@@ -166,5 +192,6 @@ export default function ContactPage() {
         </Container>
       </Box>
     </Box>
+    </>
   );
 }
