@@ -37,12 +37,12 @@ export default function ServicesSection({ initialCategories, initialServices }: 
 
   // Set first category as default on mount
   useEffect(() => {
-    if (initialCategories.length > 0 && !selectedCategory) {
+    if (initialCategories.length > 0 && !selectedCategory && !displayedCategory) {
       const firstCategoryId = initialCategories[0].id;
       setSelectedCategory(firstCategoryId);
       setDisplayedCategory(firstCategoryId);
     }
-  }, [initialCategories, selectedCategory]);
+  }, [initialCategories]);
 
   // Use displayedCategory for rendering to prevent content flash during transition
   const filteredServices = services.filter(service => service.categoryId === displayedCategory);
@@ -167,6 +167,10 @@ export default function ServicesSection({ initialCategories, initialServices }: 
                       if (category.id !== selectedCategory) {
                         shouldScrollRef.current = true;
                         setSelectedCategory(category.id);
+                        // If displayedCategory is empty, set it immediately
+                        if (!displayedCategory) {
+                          setDisplayedCategory(category.id);
+                        }
                       }
                     }}
                     sx={{
@@ -573,16 +577,16 @@ export default function ServicesSection({ initialCategories, initialServices }: 
                             href={service.bookingLink}
                             target="_blank"
                             rel="noopener noreferrer"
-                          sx={{
-                            bgcolor: '#008d80',
-                            color: 'white',
-                            px: { xs: 2, sm: 3 },
-                            py: { xs: 0.75, sm: 1 },
-                            borderRadius: '8px',
-                            fontFamily: '"Source Sans Pro", sans-serif',
-                            fontWeight: 700,
-                            fontSize: { xs: '0.85rem', sm: '0.9rem' },
-                            minHeight: '44px',
+                            sx={{
+                              bgcolor: '#008d80',
+                              color: 'white',
+                              px: { xs: 2, sm: 3 },
+                              py: { xs: 0.75, sm: 1 },
+                              borderRadius: '8px',
+                              fontFamily: '"Source Sans Pro", sans-serif',
+                              fontWeight: 700,
+                              fontSize: { xs: '0.85rem', sm: '0.9rem' },
+                              minHeight: '44px',
                               textDecoration: 'none',
                               display: 'inline-flex',
                               alignItems: 'center',

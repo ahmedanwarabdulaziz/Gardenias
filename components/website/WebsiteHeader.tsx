@@ -378,15 +378,15 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                         },
                       }}
                     >
-                      <Box sx={{ p: 3 }}>
+                      <Box sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
                         {/* Header */}
                         <Typography
                           sx={{
                             fontFamily: '"Playfair Display", serif',
-                            fontSize: '1.5rem',
+                            fontSize: { xs: '1.25rem', md: '1.5rem' },
                             fontWeight: 700,
                             color: '#008d80',
-                            mb: 3,
+                            mb: { xs: 2, md: 3 },
                           }}
                         >
                           Our Services
@@ -432,7 +432,7 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                                   <Typography
                                     sx={{
                                       fontFamily: '"Source Sans Pro", sans-serif',
-                                      fontSize: '1rem',
+                                      fontSize: { xs: '0.9rem', sm: '1rem' },
                                       fontWeight: 700,
                                       color: '#333',
                                     }}
@@ -452,8 +452,11 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                                       >
                                         <Box
                                           sx={{
-                                            px: 2,
-                                            py: 1,
+                                            px: { xs: 1.5, sm: 2 },
+                                            py: { xs: 0.75, sm: 1 },
+                                            minHeight: '44px',
+                                            display: 'flex',
+                                            alignItems: 'center',
                                             borderRadius: '8px',
                                             transition: 'all 0.2s ease',
                                             '&:hover': {
@@ -465,7 +468,7 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                                           <Typography
                                             sx={{
                                               fontFamily: '"Source Sans Pro", sans-serif',
-                                              fontSize: '0.95rem',
+                                              fontSize: { xs: '0.85rem', sm: '0.95rem' },
                                               fontWeight: 500,
                                               color: '#666',
                                               '&:hover': {
@@ -564,15 +567,15 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                         },
                       }}
                     >
-                      <Box sx={{ p: 3 }}>
+                      <Box sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
                         {/* Header */}
                         <Typography
                           sx={{
                             fontFamily: '"Playfair Display", serif',
-                            fontSize: '1.5rem',
+                            fontSize: { xs: '1.25rem', md: '1.5rem' },
                             fontWeight: 700,
                             color: '#008d80',
-                            mb: 3,
+                            mb: { xs: 2, md: 3 },
                           }}
                         >
                           Meet Our Team
@@ -590,9 +593,10 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                                 sx={{
                                   display: 'flex',
                                   alignItems: 'center',
-                                  gap: 2,
-                                  px: 2,
-                                  py: 2,
+                                  gap: { xs: 1.5, sm: 2 },
+                                  px: { xs: 1.5, sm: 2 },
+                                  py: { xs: 1.5, sm: 2 },
+                                  minHeight: '44px',
                                   borderRadius: '12px',
                                   transition: 'all 0.2s ease',
                                   '&:hover': {
@@ -626,7 +630,7 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                                   <Typography
                                     sx={{
                                       fontFamily: '"Source Sans Pro", sans-serif',
-                                      fontSize: '1rem',
+                                      fontSize: { xs: '0.9rem', sm: '1rem' },
                                       fontWeight: 600,
                                       color: '#333',
                                       overflow: 'hidden',
@@ -639,7 +643,7 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                                   <Typography
                                     sx={{
                                       fontFamily: '"Source Sans Pro", sans-serif',
-                                      fontSize: '0.85rem',
+                                      fontSize: { xs: '0.75rem', sm: '0.85rem' },
                                       color: '#666',
                                       overflow: 'hidden',
                                       textOverflow: 'ellipsis',
