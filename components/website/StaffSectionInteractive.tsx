@@ -1,31 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Box, Container, Typography, Chip, CircularProgress, Paper } from '@mui/material';
+import { useState } from 'react';
+import { Box, Container, Typography, Chip, Paper } from '@mui/material';
 import { Star, Globe, X, ArrowRight } from 'phosphor-react';
-import { PublicStaffService, PublicStaffMember } from '@/lib/publicStaffService';
+import { PublicStaffMember } from '@/lib/publicStaffService';
+import { ServerStaffMember } from '@/lib/serverDataService';
 import Link from 'next/link';
 
-export default function StaffSectionInteractive() {
-  const [staff, setStaff] = useState<PublicStaffMember[]>([]);
+interface StaffSectionInteractiveProps {
+  initialStaff: ServerStaffMember[];
+}
+
+export default function StaffSectionInteractive({ initialStaff }: StaffSectionInteractiveProps) {
+  // Convert server types to client types (they're compatible)
+  const [staff] = useState<PublicStaffMember[]>(initialStaff as PublicStaffMember[]);
   const [selectedStaff, setSelectedStaff] = useState<PublicStaffMember | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchStaff = async () => {
-      setLoading(true);
-      try {
-        const staffData = await PublicStaffService.getPublicStaff();
-        setStaff(staffData);
-      } catch (error) {
-        console.error('Error fetching staff:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStaff();
-  }, []);
 
   const handleStaffClick = (member: PublicStaffMember) => {
     setSelectedStaff(member);
@@ -43,14 +32,6 @@ export default function StaffSectionInteractive() {
       }
     }, 100);
   };
-
-  if (loading) {
-    return (
-      <Box sx={{ py: { xs: 6, md: 10 }, bgcolor: '#f8faf9', display: 'flex', justifyContent: 'center' }}>
-        <CircularProgress sx={{ color: '#008d80' }} />
-      </Box>
-    );
-  }
 
   if (staff.length === 0) {
     return null;

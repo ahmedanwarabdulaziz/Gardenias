@@ -1,10 +1,12 @@
-'use client';
-
 import { Box } from '@mui/material';
 import ServicesHeroSection from '@/components/services/ServicesHeroSection';
 import StaffSectionInteractive from '@/components/website/StaffSectionInteractive';
+import { getServerStaff } from '@/lib/serverDataService';
 
-export default function StaffPage() {
+export default async function StaffPage() {
+  // Fetch staff data server-side for instant loading
+  const staff = await getServerStaff();
+
   return (
     <Box>
       {/* Hero Section */}
@@ -14,7 +16,7 @@ export default function StaffPage() {
       />
 
       {/* Staff Section - Same as Home Page */}
-      <StaffSectionInteractive />
+      <StaffSectionInteractive initialStaff={staff} />
     </Box>
   );
 }

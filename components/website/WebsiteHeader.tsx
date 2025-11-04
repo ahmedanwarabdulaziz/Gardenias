@@ -20,8 +20,9 @@ import {
 import { List as MenuIcon, Phone, CaretDown } from 'phosphor-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { PublicCategoryService, PublicCategory, PublicService } from '@/lib/publicCategoryService';
-import { PublicStaffService, PublicStaffMember } from '@/lib/publicStaffService';
+import { PublicCategory, PublicService } from '@/lib/publicCategoryService';
+import { PublicStaffMember } from '@/lib/publicStaffService';
+import { ServerCategory, ServerService, ServerStaffMember } from '@/lib/serverDataService';
 
 const navigationItems = [
   { label: 'Home', href: '/' },
@@ -31,95 +32,27 @@ const navigationItems = [
   { label: 'Contact', href: '/contact' },
 ];
 
-export default function WebsiteHeader() {
+interface WebsiteHeaderProps {
+  initialCategories: ServerCategory[];
+  initialServices: ServerService[];
+  initialStaff: ServerStaffMember[];
+}
+
+export default function WebsiteHeader({ initialCategories, initialServices, initialStaff }: WebsiteHeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [servicesMenuOpen, setServicesMenuOpen] = useState(false);
   const [staffMenuOpen, setStaffMenuOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [mobileStaffOpen, setMobileStaffOpen] = useState(false);
-  const [categories, setCategories] = useState<PublicCategory[]>([]);
-  const [services, setServices] = useState<PublicService[]>([]);
-  const [staff, setStaff] = useState<PublicStaffMember[]>([]);
-  const [mounted, setMounted] = useState(false);
   
-  useEffect(() => {
-    setMounted(true);
-    const fetchData = async () => {
-      try {
-        const [categoriesData, servicesData, staffData] = await Promise.all([
-          PublicCategoryService.getPublicCategories(),
-          PublicCategoryService.getPublicServices(),
-          PublicStaffService.getPublicStaff()
-        ]);
-        setCategories(categoriesData);
-        setServices(servicesData);
-        setStaff(staffData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
+  // Convert server types to client types (they're compatible)
+  const categories = initialCategories as PublicCategory[];
+  const services = initialServices as PublicService[];
+  const staff = initialStaff as PublicStaffMember[];
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-
-  // Prevent hydration mismatch by not rendering dynamic content on server
-  if (!mounted) {
-    return (
-      <AppBar 
-        position="sticky" 
-        elevation={0}
-        sx={{ 
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%)',
-          backdropFilter: 'blur(20px) saturate(180%)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.3)',
-          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '1px',
-            background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent)',
-          }
-        }}
-      >
-        <Container maxWidth="lg">
-          <Toolbar 
-            sx={{ 
-              px: 0,
-              py: { xs: 0, md: 0.5 }, 
-              minHeight: { xs: 56, md: 64 },
-              justifyContent: 'center',
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', overflow: 'visible' }}>
-              <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-                <Box sx={{ 
-                  width: { xs: 280, sm: 380, md: 480 }, 
-                  height: { xs: 70, sm: 95, md: 120 },
-                  position: 'relative',
-                  my: -1,
-                }}>
-                  <Image
-                    src="/images/logo.png"
-                    alt="Gardenias Healthcare Clinic"
-                    fill
-                    priority
-                    style={{ objectFit: 'contain' }}
-                  />
-                </Box>
-              </Link>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
-    );
-  }
 
   const drawer = (
     <Box sx={{ textAlign: 'center', py: 1 }}>

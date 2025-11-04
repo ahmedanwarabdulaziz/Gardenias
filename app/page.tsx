@@ -4,7 +4,7 @@ import Script from 'next/script';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo/utils';
 import { generateOrganizationSchema, generateBreadcrumbSchema } from '@/lib/seo/utils';
 import StaffSectionWrapper from '@/components/website/StaffSectionWrapper';
-import { getServerData } from '@/lib/serverDataService';
+import { getServerData, getServerStaff } from '@/lib/serverDataService';
 
 // Lazy load components for better performance
 const HeroSection = dynamic(() => import('@/components/website/HeroSection'), {
@@ -27,7 +27,11 @@ export async function generateMetadata() {
 
 export default async function HomePage() {
   // Fetch data server-side for instant loading
-  const { categories, services } = await getServerData();
+  const [data, staff] = await Promise.all([
+    getServerData(),
+    getServerStaff()
+  ]);
+  const { categories, services } = data;
   
   const organizationSchema = generateOrganizationSchema();
   const breadcrumbSchema = generateBreadcrumbSchema([
@@ -56,7 +60,7 @@ export default async function HomePage() {
         <ServicesSection initialCategories={categories} initialServices={services} />
         
         {/* Staff Section */}
-        <StaffSectionWrapper />
+        <StaffSectionWrapper initialStaff={staff} />
         
         {/* Other sections will be added here */}
       </Box>

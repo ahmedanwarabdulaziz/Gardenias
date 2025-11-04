@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { Box, Container, Typography, Card } from '@mui/material';
-import WebsiteHeader from '@/components/website/WebsiteHeader';
+import WebsiteHeaderWrapper from '@/components/website/WebsiteHeaderWrapper';
 import WebsiteFooter from '@/components/website/WebsiteFooter';
 import ContactForm from '@/components/contact/ContactForm';
 import ContactInfo from '@/components/contact/ContactInfo';
@@ -26,7 +26,7 @@ export default function ConditionalLayout({
   
   return (
     <>
-      <WebsiteHeader />
+      <WebsiteHeaderWrapper />
       <main>{children}</main>
       
       {/* Contact Section - Show on all pages except contact page */}

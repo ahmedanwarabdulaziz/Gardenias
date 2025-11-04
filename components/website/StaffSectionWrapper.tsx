@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { ServerStaffMember } from '@/lib/serverDataService';
 
 const StaffSectionInteractive = dynamic(
   () => import('@/components/website/StaffSectionInteractive'),
@@ -10,7 +11,11 @@ const StaffSectionInteractive = dynamic(
   }
 );
 
-export default function StaffSectionWrapper() {
-  return <StaffSectionInteractive />;
+interface StaffSectionWrapperProps {
+  initialStaff: ServerStaffMember[];
+}
+
+export default function StaffSectionWrapper({ initialStaff }: StaffSectionWrapperProps) {
+  return <StaffSectionInteractive initialStaff={initialStaff} />;
 }
 
