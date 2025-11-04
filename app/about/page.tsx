@@ -1,12 +1,21 @@
 import { Box, Container, Typography, Card, CardContent, Button } from '@mui/material';
 import Script from 'next/script';
-import AboutHeroSection from '@/components/about/AboutHeroSection';
-import StaffSectionInteractive from '@/components/website/StaffSectionInteractive';
 import Link from 'next/link';
 import { Calendar } from 'phosphor-react';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo/utils';
 import { generateBreadcrumbSchema } from '@/lib/seo/utils';
 import { SITE_CONFIG } from '@/lib/seo/config';
+import AboutHeroSection from '@/components/about/AboutHeroSection';
+import dynamic from 'next/dynamic';
+
+// Dynamically import StaffSectionInteractive to avoid SSR context issues
+const StaffSectionInteractive = dynamic(
+  () => import('@/components/website/StaffSectionInteractive'),
+  { 
+    ssr: true,
+    loading: () => <div style={{ height: '400px', backgroundColor: '#f8faf9' }} />,
+  }
+);
 
 export async function generateMetadata() {
   return generateSEOMetadata({

@@ -14,6 +14,7 @@ export interface PublicCategory {
   icon?: string;
   accentColor: string;
   displayOrder: number;
+  slug?: string;
 }
 
 export interface PublicService {
@@ -40,6 +41,9 @@ export interface PublicService {
   preBookingNote?: string;
   postBookingInstructions?: string;
   practitioners?: string[];
+  seoTitle?: string;
+  seoDescription?: string;
+  keywords?: string[];
 }
 
 // Public service - no authentication required for website display
@@ -59,6 +63,7 @@ export class PublicCategoryService {
           accentColor: doc.data().accentColor || '#008d80',
           displayOrder: doc.data().displayOrder || 0,
           isActive: doc.data().isActive,
+          slug: doc.data().slug,
         }))
         .filter(cat => cat.isActive) // Filter active in memory
         .sort((a, b) => a.displayOrder - b.displayOrder); // Sort in memory
@@ -101,6 +106,9 @@ export class PublicCategoryService {
           aftercareAdvice: doc.data().aftercareAdvice || [],
           preBookingNote: doc.data().preBookingNote,
           postBookingInstructions: doc.data().postBookingInstructions,
+          seoTitle: doc.data().seoTitle,
+          seoDescription: doc.data().seoDescription,
+          keywords: doc.data().keywords,
         }))
         .filter(service => service.isActive); // Filter active in memory
 
@@ -188,6 +196,9 @@ export class PublicCategoryService {
         preBookingNote: doc.data().preBookingNote,
         postBookingInstructions: doc.data().postBookingInstructions,
         practitioners: doc.data().practitioners || [],
+        seoTitle: doc.data().seoTitle,
+        seoDescription: doc.data().seoDescription,
+        keywords: doc.data().keywords,
       } as PublicService;
 
       return service.isActive ? service : null;

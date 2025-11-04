@@ -4,20 +4,16 @@ import { useState, useEffect } from 'react';
 import {
   Box,
   Container,
-  Typography,
   Paper,
   TextField,
   Button,
   Alert,
   CircularProgress,
-  Divider,
   Chip,
-  IconButton,
 } from '@mui/material';
 import {
   Save as SaveIcon,
   Search as SearchIcon,
-  CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import BrandTypography from '@/components/shared/BrandTypography';
 import { SEOService, SEOSettings } from '@/lib/seoService';
@@ -44,7 +40,7 @@ export default function SEOPage() {
   const [formData, setFormData] = useState<Partial<SEOSettings>>({
     siteName: SITE_CONFIG.name,
     siteDescription: SITE_CONFIG.defaultDescription,
-    siteKeywords: SITE_CONFIG.defaultKeywords,
+    siteKeywords: [...SITE_CONFIG.defaultKeywords],
     defaultOgImage: SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logoo.png`,
   });
   const [keywordInput, setKeywordInput] = useState('');

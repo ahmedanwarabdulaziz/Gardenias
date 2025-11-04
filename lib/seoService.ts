@@ -1,5 +1,4 @@
 import {
-  collection,
   doc,
   getDoc,
   setDoc,
@@ -74,7 +73,7 @@ export class SEOService {
       return {
         siteName: SITE_CONFIG.name,
         siteDescription: SITE_CONFIG.defaultDescription,
-        siteKeywords: SITE_CONFIG.defaultKeywords,
+        siteKeywords: [...SITE_CONFIG.defaultKeywords],
         defaultOgImage: SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logoo.png`,
         updatedAt: new Date(),
       };
@@ -84,7 +83,7 @@ export class SEOService {
       return {
         siteName: SITE_CONFIG.name,
         siteDescription: SITE_CONFIG.defaultDescription,
-        siteKeywords: SITE_CONFIG.defaultKeywords,
+        siteKeywords: [...SITE_CONFIG.defaultKeywords],
         defaultOgImage: SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logoo.png`,
         updatedAt: new Date(),
       };

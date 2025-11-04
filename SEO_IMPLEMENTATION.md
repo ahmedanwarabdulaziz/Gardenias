@@ -201,3 +201,4 @@ To change the domain, update `lib/seo/config.ts`.
 - All SEO is optimized for mobile and desktop
 
 
+

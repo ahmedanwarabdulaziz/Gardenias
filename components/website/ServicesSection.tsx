@@ -55,6 +55,7 @@ export default function ServicesSection() {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency array - only run once on mount
 
   // Use displayedCategory for rendering to prevent content flash during transition

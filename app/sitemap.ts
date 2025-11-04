@@ -48,7 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .filter(service => service.isActive && service.slug)
       .map(service => ({
         url: `${baseUrl}/services/${service.slug}`,
-        lastModified: service.updatedAt ? new Date(service.updatedAt) : new Date(),
+        lastModified: new Date(),
         changeFrequency: 'monthly' as const,
         priority: 0.7,
       }));
@@ -61,10 +61,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const staff = await PublicStaffService.getPublicStaff();
     staffPages = staff
-      .filter(member => member.isActive && (member.slug || member.id))
+      .filter(member => member.slug || member.id)
       .map(member => ({
         url: `${baseUrl}/staff/${member.slug || member.id}`,
-        lastModified: member.updatedAt ? new Date(member.updatedAt) : new Date(),
+        lastModified: new Date(),
         changeFrequency: 'monthly' as const,
         priority: 0.7,
       }));

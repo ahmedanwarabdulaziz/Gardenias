@@ -14,13 +14,13 @@ import { generateServiceSchema, generateBreadcrumbSchema } from '@/lib/seo/utils
 import { SITE_CONFIG } from '@/lib/seo/config';
 
 interface ServicePageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: ServicePageProps) {
-  const { slug } = params;
+  const { slug } = await params;
   
   try {
     const service = await PublicCategoryService.getServiceBySlug(slug);
@@ -46,13 +46,13 @@ export async function generateMetadata({ params }: ServicePageProps) {
       image,
       type: 'website',
     });
-  } catch (error) {
+  } catch {
     return generateSEOMetadata();
   }
 }
 
 export default async function ServicePage({ params }: ServicePageProps) {
-  const { slug } = params;
+  const { slug } = await params;
   
   // Fetch service data
   const service = await PublicCategoryService.getServiceBySlug(slug);

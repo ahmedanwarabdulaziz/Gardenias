@@ -10,13 +10,13 @@ import { generatePersonSchema, generateBreadcrumbSchema } from '@/lib/seo/utils'
 import { SITE_CONFIG } from '@/lib/seo/config';
 
 interface StaffPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: StaffPageProps) {
-  const { slug } = params;
+  const { slug } = await params;
   
   try {
     const staff = await PublicStaffService.getStaffBySlug(slug);
@@ -47,13 +47,13 @@ export async function generateMetadata({ params }: StaffPageProps) {
       type: 'website',
       author: staff.name,
     });
-  } catch (error) {
+  } catch {
     return generateSEOMetadata();
   }
 }
 
 export default async function StaffPage({ params }: StaffPageProps) {
-  const { slug } = params;
+  const { slug } = await params;
   
   // Fetch staff data
   const staff = await PublicStaffService.getStaffBySlug(slug);
