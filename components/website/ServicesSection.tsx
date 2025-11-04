@@ -136,7 +136,7 @@ export default function ServicesSection({ initialCategories, initialServices }: 
                 sm: 'repeat(3, 1fr)',
                 md: 'repeat(5, 1fr)',
               },
-              gap: { xs: 2, md: 3 },
+              gap: { xs: 1.5, sm: 2, md: 3 },
               position: 'relative',
               zIndex: 1,
             }}
@@ -170,7 +170,7 @@ export default function ServicesSection({ initialCategories, initialServices }: 
                       }
                     }}
                     sx={{
-                      height: { xs: 140, md: 160 },
+                      height: { xs: 120, sm: 140, md: 160 },
                       cursor: 'pointer',
                       position: 'relative',
                       overflow: 'hidden',
@@ -276,7 +276,7 @@ export default function ServicesSection({ initialCategories, initialServices }: 
                         sx={{
                           fontFamily: '"Source Sans Pro", sans-serif',
                           fontWeight: 700,
-                          fontSize: { xs: '1.1rem', md: '1.3rem' },
+                          fontSize: { xs: '0.95rem', sm: '1.1rem', md: '1.3rem' },
                           color: 'white',
                           letterSpacing: '0.02em',
                           textShadow: '0 2px 8px rgba(0,0,0,0.3)',
@@ -354,7 +354,7 @@ export default function ServicesSection({ initialCategories, initialServices }: 
                 sm: 'repeat(2, 1fr)',
                 md: 'repeat(3, 1fr)',
               },
-              gap: { xs: 3, md: 4 },
+              gap: { xs: 2, sm: 3, md: 4 },
               opacity: isTransitioning ? 0 : 1,
               transform: isTransitioning ? 'translateY(10px)' : 'translateY(0)',
               transition: 'opacity 0.15s ease-in-out, transform 0.15s ease-in-out',
@@ -387,7 +387,7 @@ export default function ServicesSection({ initialCategories, initialServices }: 
                     <Box
                       sx={{
                         position: 'relative',
-                        height: 180,
+                        height: { xs: 150, sm: 170, md: 180 },
                         backgroundImage: bannerImage 
                           ? `url(${bannerImage})`
                           : `linear-gradient(135deg, #e6e7e8 0%, #f5f5f5 100%)`,
@@ -416,12 +416,12 @@ export default function ServicesSection({ initialCategories, initialServices }: 
                         sx={{
                           fontFamily: '"Source Sans Pro", sans-serif',
                           fontWeight: 700,
-                          fontSize: '1.25rem',
+                          fontSize: { xs: '1.1rem', sm: '1.2rem', md: '1.25rem' },
                           color: 'white',
                           lineHeight: 1.3,
                           position: 'relative',
                           zIndex: 2,
-                          p: 2.5,
+                          p: { xs: 2, sm: 2.5 },
                           textShadow: '0 2px 8px rgba(0,0,0,0.3)',
                         }}
                       >
@@ -522,7 +522,8 @@ export default function ServicesSection({ initialCategories, initialServices }: 
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          gap: 2,
+                          gap: { xs: 1.5, sm: 2 },
+                          flexWrap: { xs: 'wrap', sm: 'nowrap' },
                         }}
                       >
                         {/* Learn More Link */}
@@ -572,15 +573,16 @@ export default function ServicesSection({ initialCategories, initialServices }: 
                             href={service.bookingLink}
                             target="_blank"
                             rel="noopener noreferrer"
-                            sx={{
-                              bgcolor: '#008d80',
-                              color: 'white',
-                              px: 3,
-                              py: 1,
-                              borderRadius: '8px',
-                              fontFamily: '"Source Sans Pro", sans-serif',
-                              fontWeight: 700,
-                              fontSize: '0.9rem',
+                          sx={{
+                            bgcolor: '#008d80',
+                            color: 'white',
+                            px: { xs: 2, sm: 3 },
+                            py: { xs: 0.75, sm: 1 },
+                            borderRadius: '8px',
+                            fontFamily: '"Source Sans Pro", sans-serif',
+                            fontWeight: 700,
+                            fontSize: { xs: '0.85rem', sm: '0.9rem' },
+                            minHeight: '44px',
                               textDecoration: 'none',
                               display: 'inline-flex',
                               alignItems: 'center',

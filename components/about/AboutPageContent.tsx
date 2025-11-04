@@ -5,8 +5,13 @@ import Link from 'next/link';
 import { Calendar } from 'phosphor-react';
 import AboutHeroSection from '@/components/about/AboutHeroSection';
 import StaffSectionWrapper from '@/components/website/StaffSectionWrapper';
+import { ServerStaffMember } from '@/lib/serverDataService';
 
-export default function AboutPageContent() {
+interface AboutPageContentProps {
+  initialStaff: ServerStaffMember[];
+}
+
+export default function AboutPageContent({ initialStaff }: AboutPageContentProps) {
   return (
     <Box>
       {/* Hero Section */}
@@ -293,7 +298,7 @@ export default function AboutPageContent() {
       </Box>
 
       {/* Our Team Section - Staff Grid */}
-      <StaffSectionWrapper />
+      <StaffSectionWrapper initialStaff={initialStaff} />
 
       {/* Why Choose Gardenias Section */}
       <Box sx={{ py: { xs: 6, md: 10 }, bgcolor: 'white' }}>

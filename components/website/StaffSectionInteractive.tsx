@@ -76,7 +76,7 @@ export default function StaffSectionInteractive({ initialStaff }: StaffSectionIn
               sm: 'repeat(3, 1fr)',
               md: 'repeat(5, 1fr)',
             },
-            gap: { xs: 2, md: 3 },
+            gap: { xs: 1.5, sm: 2, md: 3 },
             mb: 4,
           }}
         >
@@ -112,7 +112,7 @@ export default function StaffSectionInteractive({ initialStaff }: StaffSectionIn
               <Box 
                 sx={{ 
                   position: 'relative',
-                  height: { xs: 220, md: 260 },
+                  height: { xs: 200, sm: 220, md: 260 },
                   backgroundImage: member.picture 
                     ? `url(${member.picture})`
                     : 'linear-gradient(135deg, #008d80 0%, #007067 100%)',
@@ -135,7 +135,7 @@ export default function StaffSectionInteractive({ initialStaff }: StaffSectionIn
                 }}
               >
                 {/* Content Overlay */}
-                <Box sx={{ position: 'relative', zIndex: 2, p: 2.5, textAlign: 'center' }}>
+                <Box sx={{ position: 'relative', zIndex: 2, p: { xs: 2, sm: 2.5 }, textAlign: 'center' }}>
                   <Typography
                     sx={{
                       fontFamily: '"Playfair Display", serif',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -263,13 +263,14 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
               <MenuIcon size={24} weight="bold" />
             </IconButton>
             
-            <Box sx={{ display: 'flex', alignItems: 'center', overflow: 'visible' }}>
-              <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', overflow: 'hidden', flex: 1, justifyContent: { xs: 'center', md: 'flex-start' } }}>
+              <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', maxWidth: '100%' }}>
                 <Box sx={{ 
-                  width: { xs: 280, sm: 380, md: 480 }, 
-                  height: { xs: 70, sm: 95, md: 120 },
+                  width: { xs: '200px', sm: 280, md: 380, lg: 480 }, 
+                  height: { xs: 60, sm: 80, md: 95, lg: 120 },
                   position: 'relative',
                   my: -1,
+                  flexShrink: 0,
                   '& img': {
                     objectPosition: 'center !important',
                     '@media (min-width: 900px)': {
@@ -353,12 +354,12 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                       sx={{
                         position: 'absolute',
                         top: '100%',
-                        left: '50%',
+                        left: { xs: '50%', md: '50%' },
                         transform: 'translateX(-50%)',
                         mt: 0.5,
-                        width: '800px',
-                        maxWidth: '90vw',
-                        maxHeight: '80vh',
+                        width: { xs: 'calc(100vw - 32px)', sm: '600px', md: '700px', lg: '800px' },
+                        maxWidth: { xs: 'calc(100vw - 32px)', md: '90vw' },
+                        maxHeight: { xs: '70vh', md: '80vh' },
                         overflowY: 'auto',
                         boxShadow: '0 16px 48px rgba(0,0,0,0.2)',
                         borderRadius: '16px',
@@ -394,8 +395,8 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                         {/* Categories Columns */}
                         <Box
                           sx={{
-                            columnCount: 2,
-                            columnGap: 4,
+                            columnCount: { xs: 1, sm: 2 },
+                            columnGap: { xs: 2, md: 4 },
                           }}
                         >
                           {categories.map((category) => {
@@ -539,12 +540,12 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                       sx={{
                         position: 'absolute',
                         top: '100%',
-                        left: '50%',
+                        left: { xs: '50%', md: '50%' },
                         transform: 'translateX(-50%)',
                         mt: 0.5,
-                        width: '400px',
-                        maxWidth: '90vw',
-                        maxHeight: '80vh',
+                        width: { xs: 'calc(100vw - 32px)', sm: '350px', md: '400px' },
+                        maxWidth: { xs: 'calc(100vw - 32px)', md: '90vw' },
+                        maxHeight: { xs: '70vh', md: '80vh' },
                         overflowY: 'auto',
                         boxShadow: '0 16px 48px rgba(0,0,0,0.2)',
                         borderRadius: '16px',

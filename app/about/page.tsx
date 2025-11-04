@@ -4,6 +4,7 @@ import { generateMetadata as generateSEOMetadata } from '@/lib/seo/utils';
 import { generateBreadcrumbSchema } from '@/lib/seo/utils';
 import { SITE_CONFIG } from '@/lib/seo/config';
 import AboutPageContent from '@/components/about/AboutPageContent';
+import { getServerStaff } from '@/lib/serverDataService';
 
 export async function generateMetadata() {
   return generateSEOMetadata({
@@ -14,7 +15,10 @@ export async function generateMetadata() {
   });
 }
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  // Fetch staff data server-side for instant loading
+  const staff = await getServerStaff();
+  
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: `${SITE_CONFIG.baseUrl}/` },
     { name: 'About Us', url: `${SITE_CONFIG.baseUrl}/about` },
@@ -29,7 +33,7 @@ export default function AboutPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       
-      <AboutPageContent />
+      <AboutPageContent initialStaff={staff} />
     </>
   );
 }
