@@ -283,6 +283,7 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
                     alt="Gardenias Healthcare Clinic"
                     fill
                     priority
+                    sizes="(max-width: 600px) 200px, (max-width: 900px) 280px, (max-width: 1200px) 380px, 480px"
                     style={{ objectFit: 'contain' }}
                   />
                 </Box>

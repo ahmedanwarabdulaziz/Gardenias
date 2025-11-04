@@ -32,6 +32,7 @@ export default function HeroSection() {
           alt="Gardenias Healthcare Clinic"
           fill
           priority
+          sizes="100vw"
           style={{
             objectFit: 'cover',
             objectPosition: 'center',

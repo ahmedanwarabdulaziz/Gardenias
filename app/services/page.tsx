@@ -1,12 +1,8 @@
 import { Box } from '@mui/material';
 import ServicesHeroSection from '@/components/services/ServicesHeroSection';
-import ServicesSection from '@/components/website/ServicesSection';
-import { getServerData } from '@/lib/serverDataService';
+import ServicesPageContent from '@/components/services/ServicesPageContent';
 
-export default async function ServicesPage() {
-  // Fetch data server-side for instant loading
-  const { categories, services } = await getServerData();
-
+export default function ServicesPage() {
   return (
     <Box>
       {/* Hero Section */}
@@ -15,8 +11,8 @@ export default async function ServicesPage() {
         heroImage="/images/Oyeservices.png"
       />
 
-      {/* Services Section - Same as Home Page */}
-      <ServicesSection initialCategories={categories} initialServices={services} />
+      {/* Services Section with client-side fetching */}
+      <ServicesPageContent />
     </Box>
   );
 }

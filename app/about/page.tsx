@@ -1,10 +1,8 @@
-
 import Script from 'next/script';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo/utils';
 import { generateBreadcrumbSchema } from '@/lib/seo/utils';
 import { SITE_CONFIG } from '@/lib/seo/config';
 import AboutPageContent from '@/components/about/AboutPageContent';
-import { getServerStaff } from '@/lib/serverDataService';
 
 export async function generateMetadata() {
   return generateSEOMetadata({
@@ -15,10 +13,7 @@ export async function generateMetadata() {
   });
 }
 
-export default async function AboutPage() {
-  // Fetch staff data server-side for instant loading
-  const staff = await getServerStaff();
-  
+export default function AboutPage() {
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: `${SITE_CONFIG.baseUrl}/` },
     { name: 'About Us', url: `${SITE_CONFIG.baseUrl}/about` },
@@ -33,7 +28,7 @@ export default async function AboutPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       
-      <AboutPageContent initialStaff={staff} />
+      <AboutPageContent />
     </>
   );
 }

@@ -1,40 +1,37 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import WebsiteHeader from './WebsiteHeader';
+import ServicesSection from '@/components/website/ServicesSection';
 import { PublicCategoryService, PublicCategory, PublicService } from '@/lib/publicCategoryService';
-import { PublicStaffService, PublicStaffMember } from '@/lib/publicStaffService';
 
-export default function WebsiteHeaderWrapper() {
+export default function ServicesPageContent() {
   const [categories, setCategories] = useState<PublicCategory[]>([]);
   const [services, setServices] = useState<PublicService[]>([]);
-  const [staff, setStaff] = useState<PublicStaffMember[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [categoriesData, servicesData, staffData] = await Promise.all([
+        const [categoriesData, servicesData] = await Promise.all([
           PublicCategoryService.getPublicCategories(),
           PublicCategoryService.getPublicServices(),
-          PublicStaffService.getPublicStaff(),
         ]);
         setCategories(categoriesData);
         setServices(servicesData);
-        setStaff(staffData);
       } catch (error) {
-        console.error('Error fetching navigation data:', error);
+        console.error('Error fetching services data:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  return (
-    <WebsiteHeader 
-      initialCategories={categories}
-      initialServices={services}
-      initialStaff={staff}
-    />
-  );
+  if (loading) {
+    return null; // Or a loading spinner
+  }
+
+  return <ServicesSection initialCategories={categories} initialServices={services} />;
 }
 

@@ -3,17 +3,16 @@ import dynamic from 'next/dynamic';
 import Script from 'next/script';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo/utils';
 import { generateOrganizationSchema, generateBreadcrumbSchema } from '@/lib/seo/utils';
-import StaffSectionWrapper from '@/components/website/StaffSectionWrapper';
-import { getServerData, getServerStaff } from '@/lib/serverDataService';
+import HomePageContent from '@/components/website/HomePageContent';
+import { getServerCategories, getServerServices, getServerStaff } from '@/lib/serverDataService';
 
 // Lazy load components for better performance
 const HeroSection = dynamic(() => import('@/components/website/HeroSection'), {
   loading: () => <div style={{ height: '600px', backgroundColor: '#f5f5f5' }} />,
 });
 
-// Import ServicesSection directly since we're passing server-fetched data
-// The component itself is still a client component ('use client')
-import ServicesSection from '@/components/website/ServicesSection';
+// Enable ISR (Incremental Static Regeneration) - revalidate every 60 seconds
+export const revalidate = 60;
 
 // Generate metadata for SEO
 export async function generateMetadata() {
@@ -26,13 +25,13 @@ export async function generateMetadata() {
 }
 
 export default async function HomePage() {
-  // Fetch data server-side for instant loading
-  const [data, staff] = await Promise.all([
-    getServerData(),
-    getServerStaff()
+  // Fetch data on the server in parallel for optimal performance
+  const [categories, services, staff] = await Promise.all([
+    getServerCategories(),
+    getServerServices(),
+    getServerStaff(),
   ]);
-  const { categories, services } = data;
-  
+
   const organizationSchema = generateOrganizationSchema();
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: 'https://www.gardenias-healthcare.net/' },
@@ -56,13 +55,12 @@ export default async function HomePage() {
         {/* Hero Section */}
         <HeroSection />
         
-        {/* Services Section - Pass pre-fetched data as props */}
-        <ServicesSection initialCategories={categories} initialServices={services} />
-        
-        {/* Staff Section */}
-        <StaffSectionWrapper initialStaff={staff} />
-        
-        {/* Other sections will be added here */}
+        {/* Content with server-side fetched data */}
+        <HomePageContent 
+          initialCategories={categories}
+          initialServices={services}
+          initialStaff={staff}
+        />
       </Box>
     </>
   );

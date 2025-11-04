@@ -1,17 +1,31 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Box, Container, Typography, Card, CardContent, Button } from '@mui/material';
 import Link from 'next/link';
 import { Calendar } from 'phosphor-react';
 import AboutHeroSection from '@/components/about/AboutHeroSection';
 import StaffSectionWrapper from '@/components/website/StaffSectionWrapper';
-import { ServerStaffMember } from '@/lib/serverDataService';
+import { PublicStaffService, PublicStaffMember } from '@/lib/publicStaffService';
 
-interface AboutPageContentProps {
-  initialStaff: ServerStaffMember[];
-}
+export default function AboutPageContent() {
+  const [staff, setStaff] = useState<PublicStaffMember[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default function AboutPageContent({ initialStaff }: AboutPageContentProps) {
+  useEffect(() => {
+    const fetchStaff = async () => {
+      try {
+        const staffData = await PublicStaffService.getPublicStaff();
+        setStaff(staffData);
+      } catch (error) {
+        console.error('Error fetching staff data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStaff();
+  }, []);
   return (
     <Box>
       {/* Hero Section */}
@@ -298,7 +312,7 @@ export default function AboutPageContent({ initialStaff }: AboutPageContentProps
       </Box>
 
       {/* Our Team Section - Staff Grid */}
-      <StaffSectionWrapper initialStaff={initialStaff} />
+      {!loading && <StaffSectionWrapper initialStaff={staff} />}
 
       {/* Why Choose Gardenias Section */}
       <Box sx={{ py: { xs: 6, md: 10 }, bgcolor: 'white' }}>
