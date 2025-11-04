@@ -202,7 +202,7 @@ export default function AboutPageContent() {
                   lineHeight: 1.8,
                 }}
               >
-                Whether your goal is to move with ease, feel emotionally stronger, or simply live with more energy — we're here to guide you every step of the way.
+                Whether your goal is to move with ease, feel emotionally stronger, or simply live with more energy — we&apos;re here to guide you every step of the way.
               </Typography>
             </Box>
             
@@ -518,8 +518,8 @@ export default function AboutPageContent() {
                 mb: 5,
               }}
             >
-              Better health begins with a single step — and we're here to walk that journey with you.
-              Whether you're managing pain, recovering from an injury, or focusing on preventive care, our team is ready to help.
+              Better health begins with a single step — and we&apos;re here to walk that journey with you.
+              Whether you&apos;re managing pain, recovering from an injury, or focusing on preventive care, our team is ready to help.
             </Typography>
             <Button
               component={Link}

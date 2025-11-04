@@ -1,3 +1,4 @@
+
 import Script from 'next/script';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo/utils';
 import { generateBreadcrumbSchema } from '@/lib/seo/utils';
