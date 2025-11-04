@@ -1,0 +1,73 @@
+﻿
+> healthcare-system@0.1.0 build
+> next build --turbopack
+
+   [1m[38;2;173;127;168mΓû▓ Next.js 15.5.4[39m[22m (Turbopack)
+   - Environments: .env.local
+   - Experiments (use with caution):
+     ┬╖ optimizePackageImports
+
+ [37m[1m [22m[39m Creating an optimized production build ...
+ [32m[1mΓ£ô[22m[39m Finished writing to disk in 403ms
+ [32m[1mΓ£ô[22m[39m Compiled successfully in 13.0s
+ [37m[1m [22m[39m Linting and checking validity of types ...
+
+[36m./app/layout.tsx[39m
+[33m72[39m:[33m9[39m  [33m[1mWarning[22m[39m: Custom fonts not added in `pages/_document.js` will only load for a single page. This is discouraged. See: https://nextjs.org/docs/messages/no-page-custom-font  [90m[1m@next/next/no-page-custom-font[22m[39m
+
+[36minfo[39m  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+ [37m[1m [22m[39m Collecting page data ...
+node.exe : TypeError: (0 , k.createContext) is not 
+a function
+At C:\Users\ahmed\AppData\Roaming\npm\npm.ps1:24 
+char:5
++     & "node$exe"  
+"$basedir/node_modules/npm/bin/npm-cli.js" $args
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (TypeE 
+   rror: (0 ,... not a function:String) [], Remot  
+  eException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    at __TURBOPACK__module__evaluation__ 
+[90m(D:\Res\Gardenias Software\healthcare-system\
+[39m.next\server\chunks\ssr\_1893bee8._.js:1:1249[
+90m)[39m
+    at instantiateModule [90m(D:\Res\Gardenias Sof
+tware\healthcare-system\[39m.next\server\chunks\ss
+r\[turbopack]_runtime.js:702:9[90m)[39m
+    at getOrInstantiateModuleFromParent 
+[90m(D:\Res\Gardenias Software\healthcare-system\
+[39m.next\server\chunks\ssr\[turbopack]_runtime.js:
+725:12[90m)[39m
+    at Context.esmImport [as i] 
+[90m(D:\Res\Gardenias Software\healthcare-system\
+[39m.next\server\chunks\ssr\[turbopack]_runtime.js:
+215:20[90m)[39m
+    at __TURBOPACK__module__evaluation__ 
+[90m(D:\Res\Gardenias Software\healthcare-system\
+[39m.next\server\chunks\ssr\_e2a6e339._.js:1:33[90
+m)[39m
+    at instantiateModule [90m(D:\Res\Gardenias Sof
+tware\healthcare-system\[39m.next\server\chunks\ss
+r\[turbopack]_runtime.js:702:9[90m)[39m
+    at getOrInstantiateModuleFromParent 
+[90m(D:\Res\Gardenias Software\healthcare-system\
+[39m.next\server\chunks\ssr\[turbopack]_runtime.js:
+725:12[90m)[39m
+    at Context.esmImport [as i] 
+[90m(D:\Res\Gardenias Software\healthcare-system\
+[39m.next\server\chunks\ssr\[turbopack]_runtime.js:
+215:20[90m)[39m
+    at __TURBOPACK__module__evaluation__ 
+[90m(D:\Res\Gardenias Software\healthcare-system\
+[39m.next\server\chunks\ssr\_e2a6e339._.js:1:1966[
+90m)[39m
+    at instantiateModule [90m(D:\Res\Gardenias Sof
+tware\healthcare-system\[39m.next\server\chunks\ss
+r\[turbopack]_runtime.js:702:9[90m)[39m
+
+> Build error occurred
+[Error: Failed to collect page data for /about] { 
+type: [32m'Error'[39m }
