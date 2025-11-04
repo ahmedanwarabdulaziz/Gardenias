@@ -6,16 +6,7 @@ import { generateMetadata as generateSEOMetadata } from '@/lib/seo/utils';
 import { generateBreadcrumbSchema } from '@/lib/seo/utils';
 import { SITE_CONFIG } from '@/lib/seo/config';
 import AboutHeroSection from '@/components/about/AboutHeroSection';
-import dynamic from 'next/dynamic';
-
-// Dynamically import StaffSectionInteractive to avoid SSR context issues
-const StaffSectionInteractive = dynamic(
-  () => import('@/components/website/StaffSectionInteractive'),
-  { 
-    ssr: false,
-    loading: () => <div style={{ height: '400px', backgroundColor: '#f8faf9' }} />,
-  }
-);
+import StaffSectionWrapper from '@/components/website/StaffSectionWrapper';
 
 export async function generateMetadata() {
   return generateSEOMetadata({
@@ -326,7 +317,7 @@ export default function AboutPage() {
       </Box>
 
       {/* Our Team Section - Staff Grid */}
-      <StaffSectionInteractive />
+      <StaffSectionWrapper />
 
       {/* Why Choose Gardenias Section */}
       <Box sx={{ py: { xs: 6, md: 10 }, bgcolor: 'white' }}>

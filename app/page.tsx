@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic';
 import Script from 'next/script';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo/utils';
 import { generateOrganizationSchema, generateBreadcrumbSchema } from '@/lib/seo/utils';
+import StaffSectionWrapper from '@/components/website/StaffSectionWrapper';
 
 // Lazy load components for better performance
 const HeroSection = dynamic(() => import('@/components/website/HeroSection'), {
@@ -10,11 +11,6 @@ const HeroSection = dynamic(() => import('@/components/website/HeroSection'), {
 });
 
 const ServicesSection = dynamic(() => import('@/components/website/ServicesSection'), {
-  loading: () => <div style={{ height: '400px', backgroundColor: '#f8faf9' }} />,
-});
-
-const StaffSection = dynamic(() => import('@/components/website/StaffSectionInteractive'), {
-  ssr: false,
   loading: () => <div style={{ height: '400px', backgroundColor: '#f8faf9' }} />,
 });
 
@@ -56,7 +52,7 @@ export default function HomePage() {
         <ServicesSection />
         
         {/* Staff Section */}
-        <StaffSection />
+        <StaffSectionWrapper />
         
         {/* Other sections will be added here */}
       </Box>
