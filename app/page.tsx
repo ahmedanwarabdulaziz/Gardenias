@@ -14,6 +14,7 @@ const ServicesSection = dynamic(() => import('@/components/website/ServicesSecti
 });
 
 const StaffSection = dynamic(() => import('@/components/website/StaffSectionInteractive'), {
+  ssr: false,
   loading: () => <div style={{ height: '400px', backgroundColor: '#f8faf9' }} />,
 });
 

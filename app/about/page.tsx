@@ -12,7 +12,7 @@ import dynamic from 'next/dynamic';
 const StaffSectionInteractive = dynamic(
   () => import('@/components/website/StaffSectionInteractive'),
   { 
-    ssr: true,
+    ssr: false,
     loading: () => <div style={{ height: '400px', backgroundColor: '#f8faf9' }} />,
   }
 );
