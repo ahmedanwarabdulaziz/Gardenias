@@ -1,10 +1,12 @@
-'use client';
-
 import { Box } from '@mui/material';
 import ServicesHeroSection from '@/components/services/ServicesHeroSection';
 import ServicesSection from '@/components/website/ServicesSection';
+import { getServerData } from '@/lib/serverDataService';
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  // Fetch data server-side for instant loading
+  const { categories, services } = await getServerData();
+
   return (
     <Box>
       {/* Hero Section */}
@@ -14,7 +16,7 @@ export default function ServicesPage() {
       />
 
       {/* Services Section - Same as Home Page */}
-      <ServicesSection />
+      <ServicesSection initialCategories={categories} initialServices={services} />
     </Box>
   );
 }

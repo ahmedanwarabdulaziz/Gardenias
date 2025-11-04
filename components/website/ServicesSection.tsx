@@ -26,8 +26,9 @@ interface ServicesSectionProps {
 
 export default function ServicesSection({ initialCategories, initialServices }: ServicesSectionProps) {
   // Convert server types to client types (they're compatible)
-  const [categories, setCategories] = useState<PublicCategory[]>(initialCategories as PublicCategory[]);
-  const [services, setServices] = useState<PublicService[]>(initialServices as PublicService[]);
+  // Keep as state in case we need to update them later (e.g., real-time updates)
+  const [categories] = useState<PublicCategory[]>(initialCategories as PublicCategory[]);
+  const [services] = useState<PublicService[]>(initialServices as PublicService[]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [displayedCategory, setDisplayedCategory] = useState<string>(''); // Category currently displayed
   const [isTransitioning, setIsTransitioning] = useState(false);

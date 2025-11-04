@@ -4,7 +4,7 @@ import Script from 'next/script';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo/utils';
 import { generateOrganizationSchema, generateBreadcrumbSchema } from '@/lib/seo/utils';
 import StaffSectionWrapper from '@/components/website/StaffSectionWrapper';
-import { getServerData, ServerCategory, ServerService } from '@/lib/serverDataService';
+import { getServerData } from '@/lib/serverDataService';
 
 // Lazy load components for better performance
 const HeroSection = dynamic(() => import('@/components/website/HeroSection'), {
