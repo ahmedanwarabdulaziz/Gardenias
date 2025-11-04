@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Box, Container, Typography, Card, CardContent, Chip, CircularProgress } from '@mui/material';
+import { Box, Container, Typography, Card, CardContent, Chip } from '@mui/material';
 import Link from 'next/link';
 import { FirstAid, Heart, Activity, Brain, Baby, Barbell } from 'phosphor-react';
-import { PublicCategoryService, PublicCategory, PublicService } from '@/lib/publicCategoryService';
+import { PublicCategory, PublicService } from '@/lib/publicCategoryService';
+import { ServerCategory, ServerService } from '@/lib/serverDataService';
 
 // Default icon mapping based on category name patterns
 const getDefaultIcon = (categoryName: string, color: string) => {
@@ -18,45 +19,29 @@ const getDefaultIcon = (categoryName: string, color: string) => {
   return <Activity size={40} weight="duotone" color={color} />;
 };
 
-export default function ServicesSection() {
-  const [categories, setCategories] = useState<PublicCategory[]>([]);
-  const [services, setServices] = useState<PublicService[]>([]);
+interface ServicesSectionProps {
+  initialCategories: ServerCategory[];
+  initialServices: ServerService[];
+}
+
+export default function ServicesSection({ initialCategories, initialServices }: ServicesSectionProps) {
+  // Convert server types to client types (they're compatible)
+  const [categories, setCategories] = useState<PublicCategory[]>(initialCategories as PublicCategory[]);
+  const [services, setServices] = useState<PublicService[]>(initialServices as PublicService[]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [displayedCategory, setDisplayedCategory] = useState<string>(''); // Category currently displayed
-  const [loading, setLoading] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const servicesListRef = useRef<HTMLDivElement>(null);
   const shouldScrollRef = useRef(false);
 
-  // Fetch data only once on mount
+  // Set first category as default on mount
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const [categoriesData, servicesData] = await Promise.all([
-          PublicCategoryService.getPublicCategories(),
-          PublicCategoryService.getPublicServices()
-        ]);
-        
-        setCategories(categoriesData);
-        setServices(servicesData);
-        
-        // Set first category as default
-        if (categoriesData.length > 0 && !selectedCategory) {
-          const firstCategoryId = categoriesData[0].id;
-          setSelectedCategory(firstCategoryId);
-          setDisplayedCategory(firstCategoryId);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array - only run once on mount
+    if (initialCategories.length > 0 && !selectedCategory) {
+      const firstCategoryId = initialCategories[0].id;
+      setSelectedCategory(firstCategoryId);
+      setDisplayedCategory(firstCategoryId);
+    }
+  }, [initialCategories, selectedCategory]);
 
   // Use displayedCategory for rendering to prevent content flash during transition
   const filteredServices = services.filter(service => service.categoryId === displayedCategory);
@@ -90,14 +75,6 @@ export default function ServicesSection() {
       shouldScrollRef.current = false;
     }
   }, [selectedCategory, displayedCategory]);
-
-  if (loading) {
-    return (
-      <Box sx={{ py: { xs: 6, md: 10 }, bgcolor: '#f8faf9', display: 'flex', justifyContent: 'center' }}>
-        <CircularProgress sx={{ color: '#008d80' }} />
-      </Box>
-    );
-  }
 
   if (categories.length === 0) {
     return null;
