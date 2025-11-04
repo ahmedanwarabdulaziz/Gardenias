@@ -11,11 +11,35 @@ export const metadata: Metadata = {
   keywords: 'healthcare, medical, doctor, hospital, clinic, medical treatment, healthcare provider, medical consultation, emergency care, specialized medicine',
   icons: {
     icon: [
-      { url: '/images/logo.png', type: 'image/png' },
+      { 
+        url: '/images/logoo.png', 
+        type: 'image/png',
+        sizes: '512x512',
+        rel: 'icon',
+      },
+      { 
+        url: '/images/logoo.png', 
+        type: 'image/png',
+        sizes: '192x192',
+        rel: 'icon',
+      },
+      { 
+        url: '/images/logoo.png', 
+        type: 'image/png',
+        sizes: '32x32',
+        rel: 'icon',
+      },
       { url: '/favicon.ico', sizes: 'any' },
     ],
     apple: [
-      { url: '/images/logo.png', type: 'image/png' },
+      { 
+        url: '/images/logoo.png', 
+        type: 'image/png',
+        sizes: '180x180',
+      },
+    ],
+    shortcut: [
+      { url: '/images/logoo.png', type: 'image/png' },
     ],
   },
   other: {
@@ -34,6 +58,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" type="image/png" href="/images/logoo.png" />
         <meta name="theme-color" content="#008d80" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />

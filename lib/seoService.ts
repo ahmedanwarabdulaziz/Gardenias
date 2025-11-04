@@ -75,7 +75,7 @@ export class SEOService {
         siteName: SITE_CONFIG.name,
         siteDescription: SITE_CONFIG.defaultDescription,
         siteKeywords: SITE_CONFIG.defaultKeywords,
-        defaultOgImage: SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logo.png`,
+        defaultOgImage: SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logoo.png`,
         updatedAt: new Date(),
       };
     } catch (error) {
@@ -85,7 +85,7 @@ export class SEOService {
         siteName: SITE_CONFIG.name,
         siteDescription: SITE_CONFIG.defaultDescription,
         siteKeywords: SITE_CONFIG.defaultKeywords,
-        defaultOgImage: SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logo.png`,
+        defaultOgImage: SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logoo.png`,
         updatedAt: new Date(),
       };
     }

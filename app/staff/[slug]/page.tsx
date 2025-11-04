@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: StaffPageProps) {
       ...(staff.areasOfSpecialization || []),
     ];
     const url = `${SITE_CONFIG.baseUrl}/staff/${slug}`;
-    const image = staff.picture || staff.heroImage || SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logo.png`;
+    const image = staff.picture || staff.heroImage || SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logoo.png`;
 
     return generateSEOMetadata({
       title,

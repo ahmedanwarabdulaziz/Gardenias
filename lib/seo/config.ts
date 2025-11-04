@@ -35,11 +35,11 @@ export const SITE_CONFIG = {
     name: 'Gardenias Healthcare Clinic Inc.',
     legalName: 'Gardenias Healthcare Clinic Inc.',
     url: 'https://www.gardenias-healthcare.net',
-    logo: 'https://www.gardenias-healthcare.net/images/logo.png',
+    logo: 'https://www.gardenias-healthcare.net/images/logoo.png',
     foundingDate: '2022',
     type: 'MedicalBusiness',
   },
-  defaultImage: 'https://www.gardenias-healthcare.net/images/logo.png',
+  defaultImage: 'https://www.gardenias-healthcare.net/images/logoo.png',
   businessHours: {
     // Can be updated via admin
     '@type': 'OpeningHoursSpecification',

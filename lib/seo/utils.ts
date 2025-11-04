@@ -39,7 +39,7 @@ export function generateMetadata(data: SEOData = {}): Metadata {
 
   const metaDescription = description || SITE_CONFIG.defaultDescription;
   const metaKeywords = keywords?.join(', ') || SITE_CONFIG.defaultKeywords.join(', ');
-  const metaImage = image || SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logo.png`;
+  const metaImage = image || SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logoo.png`;
   const canonicalUrl = url || SITE_CONFIG.baseUrl;
 
   const robots = [
@@ -169,7 +169,7 @@ export function generateServiceSchema(data: {
       url: SITE_CONFIG.organization.url,
     },
     url,
-    image: image || SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logo.png`,
+    image: image || SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logoo.png`,
     ...(category && {
       category: {
         '@type': 'Thing',
@@ -271,7 +271,7 @@ export function generateArticleSchema(data: {
     headline,
     description,
     url,
-    image: image || SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logo.png`,
+    image: image || SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logoo.png`,
     datePublished: publishedTime,
     ...(modifiedTime && { dateModified: modifiedTime }),
     author: {

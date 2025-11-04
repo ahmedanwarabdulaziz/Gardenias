@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: ServicePageProps) {
     const description = service.seoDescription || service.shortDescription;
     const keywords = service.keywords || [service.name, category?.name || '', 'Milton', 'Ontario'];
     const url = `${SITE_CONFIG.baseUrl}/services/${slug}`;
-    const image = service.heroImage || SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logo.png`;
+    const image = service.heroImage || SITE_CONFIG.defaultImage || `${SITE_CONFIG.baseUrl}/images/logoo.png`;
 
     return generateSEOMetadata({
       title,
