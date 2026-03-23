@@ -102,6 +102,13 @@ interface CustomerDetails {
   note: string;
 }
 
+interface FirebaseStaffMember {
+  squareTeamMemberId?: string;
+  name?: string;
+  title?: string;
+  picture?: string;
+}
+
 type BookingPath = 'service' | 'practitioner' | null;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -348,7 +355,7 @@ export default function BookingFlow() {
       // Fetch CMS staff from Firebase (for picture enrichment when squareTeamMemberId is linked)
       const fbStaffRes = await fetch('/api/booking/staff');
       const fbStaffData = await fbStaffRes.json();
-      const fbStaff: any[] = fbStaffData.staff || [];
+      const fbStaff: FirebaseStaffMember[] = fbStaffData.staff || [];
 
       // Fetch Square team (source of truth for which staff are bookable)
       const teamRes = await fetch('/api/square/team');
@@ -361,7 +368,7 @@ export default function BookingFlow() {
         .filter(s => assignedSquareIds.has(s.id))
         .map(s => {
           // Overlay Firebase picture/name/title if squareTeamMemberId is linked
-          const fbMatch = fbStaff.find((fs: any) => fs.squareTeamMemberId === s.id);
+          const fbMatch = fbStaff.find((fs) => fs.squareTeamMemberId === s.id);
           if (fbMatch) {
             return {
               ...s,
