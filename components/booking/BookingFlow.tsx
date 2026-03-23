@@ -18,11 +18,6 @@ import {
   Avatar,
   Fade,
   Skeleton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  IconButton,
   Collapse,
 } from '@mui/material';
 import {
@@ -34,7 +29,6 @@ import {
   AccessTime,
   ArrowForward,
   ArrowBack,
-  Close,
   ExpandMore,
   ExpandLess,
   AutoAwesome,
@@ -138,14 +132,6 @@ function formatSlotTime(isoString: string) {
   });
 }
 
-function formatDateDisplay(dateStr: string) {
-  const date = new Date(dateStr + 'T12:00:00');
-  return date.toLocaleDateString('en-CA', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  });
-}
 
 // ─── Step labels per path ────────────────────────────────────────────────────
 
@@ -217,7 +203,6 @@ export default function BookingFlow() {
   // ─── Data ────────────────────────────────────────────────────────────────
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [locationId, setLocationId] = useState<string | null>(null);
-  const [serviceStaff, setServiceStaff] = useState<StaffMember[]>([]);
   const [squareStaff, setSquareStaff] = useState<SquareStaffMember[]>([]);
   const [availabilities, setAvailabilities] = useState<Availability[]>([]);
 
@@ -238,12 +223,6 @@ export default function BookingFlow() {
   // ─── UI State ────────────────────────────────────────────────────────────
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [bookingResult, setBookingResult] = useState<Record<string, unknown> | null>(null);
-  // Calendar state: track which month is displayed and which dates have slots
-  const [calendarMonth, setCalendarMonth] = useState<Date>(() => {
-    const d = new Date();
-    d.setDate(1);
-    return d;
-  });
   const [dateAvailability, setDateAvailability] = useState<Record<string, 'available' | 'unavailable' | 'loading'>>({});
   const [loadingDates, setLoadingDates] = useState(false);
   // Tracks days where selected staff is full BUT another practitioner is free
@@ -350,7 +329,7 @@ export default function BookingFlow() {
       const res = await fetch(`/api/square/service-staff?itemId=${squareItemId}`);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-      setServiceStaff(data.staff || []);
+      // staff stored in data.staff (used to build assignedSquareIds below)
 
       // Fetch CMS staff from Firebase (for picture enrichment when squareTeamMemberId is linked)
       const fbStaffRes = await fetch('/api/booking/staff');
@@ -594,12 +573,6 @@ export default function BookingFlow() {
     return false;
   };
 
-  // Date options — next 14 days
-  const dateOptions = Array.from({ length: 14 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() + i + 1);
-    return date.toISOString().split('T')[0];
-  });
 
   // ═════════════════════════════════════════════════════════════════════════
   // Render

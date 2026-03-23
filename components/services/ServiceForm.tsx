@@ -323,7 +323,7 @@ function ServiceStaffFromSquare({ service }: { service: Service | null }) {
   );
 }
 
-export default function ServiceForm({ service, onSave, onCancel, categories, staff }: ServiceFormProps) {
+export default function ServiceForm({ service, onSave, onCancel, categories, staff: _staff }: ServiceFormProps) {
   const [formData, setFormData] = useState<ServiceFormData>(
     service ? {
       name: service.name || '',
@@ -537,10 +537,12 @@ export default function ServiceForm({ service, onSave, onCancel, categories, sta
     setFormData(prev => ({ ...prev, [prop]: event.target.value }));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleArrayChange = (prop: keyof ServiceFormData, value: string[]) => {
     setFormData(prev => ({ ...prev, [prop]: value }));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const addDuration = () => {
     if (newDuration.duration > 0 && newDuration.price >= 0) {
       setFormData(prev => ({
@@ -551,6 +553,7 @@ export default function ServiceForm({ service, onSave, onCancel, categories, sta
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const removeDuration = (index: number) => {
     setFormData(prev => ({
       ...prev,
@@ -558,6 +561,7 @@ export default function ServiceForm({ service, onSave, onCancel, categories, sta
     }));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const addPackage = () => {
     if (newPackage.title && newPackage.sessions > 0 && newPackage.price >= 0) {
       setFormData(prev => ({
@@ -568,6 +572,7 @@ export default function ServiceForm({ service, onSave, onCancel, categories, sta
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const removePackage = (index: number) => {
     setFormData(prev => ({
       ...prev,

@@ -16,7 +16,11 @@ export async function POST(request: NextRequest) {
     const client = getSquareClient();
 
     // Build the segment filter
-    const segmentFilter: any = {
+    interface SegmentFilter {
+      serviceVariationId: string;
+      teamMemberIdFilter?: { any: string[] };
+    }
+    const segmentFilter: SegmentFilter = {
       serviceVariationId,
     };
     if (teamMemberId) {
