@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     if (searchResponse.objects) {
       for (const obj of searchResponse.objects) {
         if (obj.id === itemId) {
-          catalogItem = serializeSquareData(obj);
+          catalogItem = serializeSquareData(obj) as unknown as Record<string, unknown>;
           break;
         }
       }
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
       const teamResponse = await client.teamMembers.search({
         query: { filter: { status: 'ACTIVE' } },
       });
-      allMembers = serializeSquareData(teamResponse.teamMembers || []);
+      allMembers = serializeSquareData(teamResponse.teamMembers || []) as unknown as Array<Record<string, unknown>>;
     } catch (e) {
       console.error('Error fetching team members:', e);
     }
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
     if (allTeamMemberIds.size === 0) {
       try {
         const profilesResponse = await client.bookings.teamMemberProfiles.list({});
-        const profiles = serializeSquareData(profilesResponse.teamMemberBookingProfiles || []);
+        const profiles = serializeSquareData(profilesResponse.data || []) as unknown as Array<Record<string, unknown>>;
         
         for (const profile of (profiles as Array<Record<string, unknown>>)) {
           if (profile.isBookable) {

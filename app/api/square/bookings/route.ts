@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     );
 
     return NextResponse.json({
-      booking: serializeSquareData(bookingResponse.booking),
+      booking: serializeSquareData(bookingResponse.booking) as Record<string, unknown>,
       success: true,
     });
   } catch (error: unknown) {

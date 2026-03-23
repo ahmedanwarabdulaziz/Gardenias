@@ -23,8 +23,10 @@ export function getSquareClient(): SquareClient {
   return squareClient;
 }
 
-// Helper to serialize BigInt values in Square API responses
-export function serializeSquareData<T>(data: T): T {
+// Helper to serialize BigInt values in Square API responses.
+// Returns unknown because JSON roundtrip erases the original SDK type.
+// Callers must cast to their expected shape.
+export function serializeSquareData(data: unknown): unknown {
   return JSON.parse(
     JSON.stringify(data, (_key, value) =>
       typeof value === 'bigint' ? value.toString() : value

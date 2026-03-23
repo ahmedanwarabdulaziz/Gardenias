@@ -9,7 +9,7 @@ export async function GET() {
     let bookingProfiles: Array<Record<string, unknown>> = [];
     try {
       const profilesResponse = await client.bookings.teamMemberProfiles.list({});
-      bookingProfiles = serializeSquareData(profilesResponse.teamMemberBookingProfiles || []);
+      bookingProfiles = serializeSquareData(profilesResponse.data || []) as unknown as Array<Record<string, unknown>>;
     } catch {
       // Booking profiles may not be available, fall back to team members
     }
@@ -22,7 +22,7 @@ export async function GET() {
         },
       },
     });
-    const teamMembers = serializeSquareData(searchResponse.teamMembers || []);
+    const teamMembers = serializeSquareData(searchResponse.teamMembers || []) as unknown as Array<Record<string, unknown>>;
 
     // If we have booking profiles, use them to determine bookability
     // Otherwise, use all team members

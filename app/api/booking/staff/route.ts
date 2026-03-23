@@ -20,8 +20,18 @@ export async function GET() {
     const data = await res.json();
     const documents = data.documents || [];
 
+    interface FirestoreField {
+      stringValue?: string;
+      booleanValue?: boolean;
+      integerValue?: string;
+    }
+    interface FirestoreDoc {
+      name: string;
+      fields: Record<string, FirestoreField>;
+    }
+
     const staff = documents
-      .map((doc: any) => {
+      .map((doc: FirestoreDoc) => {
         const fields = doc.fields || {};
         const id = doc.name.split('/').pop();
         return {
@@ -35,8 +45,8 @@ export async function GET() {
           order: parseInt(fields.order?.integerValue || '99', 10),
         };
       })
-      .filter((s: any) => s.isActive && s.name)
-      .sort((a: any, b: any) => a.order - b.order);
+      .filter((s: { isActive: boolean; name: string }) => s.isActive && s.name)
+      .sort((a: { order: number }, b: { order: number }) => a.order - b.order);
 
     return NextResponse.json({ staff });
   } catch (error) {

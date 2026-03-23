@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const availabilities = serializeSquareData(response.availabilities || []);
+    const availabilities = serializeSquareData(response.availabilities || []) as unknown[];
 
     return NextResponse.json({ availabilities });
   } catch (error) {

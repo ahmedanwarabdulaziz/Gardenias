@@ -29,8 +29,8 @@ export async function GET() {
       
       if (response.objects) {
         for (const obj of response.objects) {
-          if (obj.itemData?.productType === 'APPOINTMENTS_SERVICE') {
-            catalogItems.push(serializeSquareData(obj));
+          if (obj.type === 'ITEM' && (obj as { itemData?: { productType?: string } }).itemData?.productType === 'APPOINTMENTS_SERVICE') {
+            catalogItems.push(serializeSquareData(obj) as Record<string, unknown>);
           }
         }
       }
