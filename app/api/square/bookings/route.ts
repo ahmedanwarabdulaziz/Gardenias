@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     };
 
     const bookingResponse = await client.bookings.create(
-      bookingRequest as Parameters<typeof client.bookings.create>[0]
+      bookingRequest as unknown as Parameters<typeof client.bookings.create>[0]
     );
 
     return NextResponse.json({
