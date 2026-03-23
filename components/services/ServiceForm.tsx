@@ -21,6 +21,7 @@ import {
   OutlinedInput,
   ListItemText,
   Checkbox,
+  CircularProgress,
 } from '@mui/material';
 import {
   PhotoCamera as PhotoCameraIcon,
@@ -133,6 +134,197 @@ function TabPanel(props: TabPanelProps) {
     >
       {value === index && <Box sx={{ p: 3, height: '100%' }}>{children}</Box>}
     </div>
+  );
+}
+
+// Types for Square service staff
+interface SquareStaffMember {
+  id: string;
+  displayName: string;
+  jobTitle: string;
+}
+
+interface SquareVariationStaff {
+  variationId: string;
+  variationName: string;
+  durationMinutes: number | null;
+  priceCents: number | null;
+  currency: string;
+  teamMembers: SquareStaffMember[];
+}
+
+function formatDuration(minutes: number | null): string {
+  if (minutes === null) return '';
+  if (minutes < 60) return `${minutes}min`;
+  const hrs = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return mins > 0 ? `${hrs}h ${mins}min` : `${hrs}h`;
+}
+
+function formatPrice(cents: number | null, currency: string): string {
+  if (cents === null) return '';
+  return new Intl.NumberFormat('en-CA', {
+    style: 'currency',
+    currency: currency || 'CAD',
+  }).format(cents / 100);
+}
+
+// Component to fetch and display staff assigned to a specific service in Square
+function ServiceStaffFromSquare({ service }: { service: Service | null }) {
+  const [loading, setLoading] = useState(false);
+  const [variations, setVariations] = useState<SquareVariationStaff[]>([]);
+  const [allStaff, setAllStaff] = useState<SquareStaffMember[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const squareItemId = service?.squareMapping?.squareItemId;
+    if (!squareItemId) {
+      setVariations([]);
+      setAllStaff([]);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    fetch(`/api/square/service-staff?itemId=${squareItemId}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) {
+          setError(data.error);
+        } else {
+          setVariations(data.variations || []);
+          setAllStaff(data.staff || []);
+        }
+      })
+      .catch(() => setError('Failed to fetch staff from Square'))
+      .finally(() => setLoading(false));
+  }, [service?.squareMapping?.squareItemId]);
+
+  if (!service?.squareMapping) {
+    return (
+      <Box sx={{ p: 3, bgcolor: 'rgba(0,0,0,0.03)', borderRadius: 2, textAlign: 'center' }}>
+        <PeopleIcon sx={{ fontSize: 48, color: '#ccc', mb: 1 }} />
+        <BrandTypography variant="text" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+          Not linked to Square
+        </BrandTypography>
+        <BrandTypography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.5 }}>
+          Link this service to a Square service on the Square Integration page first.
+        </BrandTypography>
+      </Box>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
+        <CircularProgress size={24} sx={{ mr: 2 }} />
+        <BrandTypography variant="text" sx={{ color: 'text.secondary' }}>
+          Loading staff from Square...
+        </BrandTypography>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 2, bgcolor: 'rgba(211,47,47,0.05)', borderRadius: 2, border: '1px solid rgba(211,47,47,0.2)' }}>
+        <BrandTypography variant="caption" sx={{ color: '#d32f2f' }}>{error}</BrandTypography>
+      </Box>
+    );
+  }
+
+  // Show staff grouped by variation
+  if (variations.length > 0) {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {variations.map(variation => (
+          <Box
+            key={variation.variationId}
+            sx={{
+              p: 2,
+              bgcolor: 'rgba(0,141,128,0.04)',
+              borderRadius: 2,
+              border: '1px solid rgba(0,141,128,0.15)',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+              <BrandTypography variant="text" sx={{ fontWeight: 700, fontSize: '0.9rem' }}>
+                {variation.variationName}
+              </BrandTypography>
+              {variation.durationMinutes && (
+                <Chip
+                  size="small"
+                  label={formatDuration(variation.durationMinutes)}
+                  sx={{ height: 22, fontSize: '0.75rem', bgcolor: 'rgba(0,141,128,0.1)', color: '#008d80' }}
+                />
+              )}
+              {variation.priceCents !== null && (
+                <Chip
+                  size="small"
+                  label={formatPrice(variation.priceCents, variation.currency)}
+                  sx={{ height: 22, fontSize: '0.75rem', bgcolor: 'rgba(0,141,128,0.1)', color: '#008d80' }}
+                />
+              )}
+            </Box>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+              {variation.teamMembers.length > 0 ? (
+                variation.teamMembers.map(member => (
+                  <Chip
+                    key={member.id}
+                    label={`${member.displayName}${member.jobTitle ? ` • ${member.jobTitle}` : ''}`}
+                    sx={{
+                      bgcolor: 'rgba(0,141,128,0.1)',
+                      color: '#008d80',
+                      fontWeight: 600,
+                      fontSize: '0.8rem',
+                      border: '1px solid rgba(0,141,128,0.2)',
+                    }}
+                  />
+                ))
+              ) : (
+                <BrandTypography variant="caption" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+                  No specific staff assigned — all team members may be available
+                </BrandTypography>
+              )}
+            </Box>
+          </Box>
+        ))}
+      </Box>
+    );
+  }
+
+  // Fallback: show all staff for this service
+  if (allStaff.length > 0) {
+    return (
+      <Box sx={{ p: 3, bgcolor: 'rgba(0,141,128,0.04)', borderRadius: 2, border: '1px dashed rgba(0,141,128,0.3)' }}>
+        <BrandTypography variant="caption" sx={{ fontWeight: 600, mb: 1, display: 'block', color: '#008d80', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          Staff available for this service:
+        </BrandTypography>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          {allStaff.map(member => (
+            <Chip
+              key={member.id}
+              label={`${member.displayName}${member.jobTitle ? ` • ${member.jobTitle}` : ''}`}
+              sx={{
+                bgcolor: 'rgba(0,141,128,0.1)',
+                color: '#008d80',
+                fontWeight: 600,
+                border: '1px solid rgba(0,141,128,0.2)',
+              }}
+            />
+          ))}
+        </Box>
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ p: 2, bgcolor: 'rgba(0,0,0,0.03)', borderRadius: 1 }}>
+      <BrandTypography variant="caption" sx={{ color: 'text.secondary' }}>
+        No staff assignments found for this service in Square.
+      </BrandTypography>
+    </Box>
   );
 }
 
@@ -490,12 +682,10 @@ export default function ServiceForm({ service, onSave, onCancel, categories, sta
           }}
         >
           <Tab label="Basic Info" icon={<CategoryIcon />} iconPosition="start" />
-          <Tab label="Session & Pricing" icon={<MoneyIcon />} iconPosition="start" />
           <Tab label="Audience & Treatment" icon={<PeopleIcon />} iconPosition="start" />
           <Tab label="Session Experience" icon={<VisibilityIcon />} iconPosition="start" />
           <Tab label="Visuals & Media" icon={<PhotoCameraIcon />} iconPosition="start" />
           <Tab label="Staff & Availability" icon={<PeopleIcon />} iconPosition="start" />
-          <Tab label="Booking & Integration" icon={<LinkIcon />} iconPosition="start" />
           <Tab label="SEO & Meta" icon={<SearchIcon />} iconPosition="start" />
           <Tab label="Internal & Compliance" icon={<NotesIcon />} iconPosition="start" />
         </Tabs>
@@ -672,237 +862,8 @@ export default function ServiceForm({ service, onSave, onCancel, categories, sta
             </Box>
           </TabPanel>
 
-          {/* Tab 2: Session & Pricing */}
+          {/* Tab 2: Audience & Treatment Details */}
           <TabPanel value={activeTab} index={1}>
-            <Box sx={{ width: '100%', px: { xs: 2, sm: 3, md: 4 } }}>
-              <Box sx={{ mb: 4 }}>
-                <BrandTypography variant="subheader" sx={{ mb: 2, color: 'primary.main' }}>
-                  Session & Pricing
-                </BrandTypography>
-                <BrandTypography variant="text" sx={{ color: 'text.secondary', mb: 3 }}>
-                  Manage treatment durations and fees
-                </BrandTypography>
-              </Box>
-
-              <Paper elevation={1} sx={{ p: { xs: 3, sm: 4, md: 5 }, mb: 4, borderRadius: 3, border: '1px solid', borderColor: 'grey.200' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                  <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>
-                    <MoneyIcon />
-                  </Avatar>
-                  <Box>
-                    <BrandTypography variant="subheader" sx={{ color: 'primary.main' }}>
-                      Session & Pricing
-                    </BrandTypography>
-                    <BrandTypography variant="caption" sx={{ color: 'text.secondary' }}>
-                      Manage treatment durations and fees cleanly
-                    </BrandTypography>
-                  </Box>
-                </Box>
-
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%' }}>
-                  {/* Session Durations & Prices */}
-                  <Box>
-                    <BrandTypography variant="text" sx={{ mb: 2, fontWeight: 600 }}>
-                      Session Durations & Prices
-                    </BrandTypography>
-                    {formData.sessionDurations.map((session, index) => (
-                      <Box key={index} sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
-                        <TextField
-                          label="Duration (minutes)"
-                          type="number"
-                          value={session.duration}
-                          onChange={(e) => {
-                            const newDurations = [...formData.sessionDurations];
-                            newDurations[index].duration = parseInt(e.target.value);
-                            setFormData(prev => ({ ...prev, sessionDurations: newDurations }));
-                          }}
-                          sx={{ width: 150 }}
-                        />
-                        <TextField
-                          label="Price ($)"
-                          type="number"
-                          value={session.price}
-                          onChange={(e) => {
-                            const newDurations = [...formData.sessionDurations];
-                            newDurations[index].price = parseFloat(e.target.value);
-                            setFormData(prev => ({ ...prev, sessionDurations: newDurations }));
-                          }}
-                          sx={{ width: 150 }}
-                        />
-                        <IconButton onClick={() => removeDuration(index)} color="error">
-                          <DeleteIcon />
-                        </IconButton>
-                      </Box>
-                    ))}
-                    
-                    <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-                      <TextField
-                        label="Duration (minutes)"
-                        type="number"
-                        value={newDuration.duration}
-                        onChange={(e) => setNewDuration(prev => ({ ...prev, duration: parseInt(e.target.value) }))}
-                        sx={{ width: 150 }}
-                      />
-                      <TextField
-                        label="Price ($)"
-                        type="number"
-                        value={newDuration.price}
-                        onChange={(e) => setNewDuration(prev => ({ ...prev, price: parseFloat(e.target.value) }))}
-                        sx={{ width: 150 }}
-                      />
-                      <Button onClick={addDuration} startIcon={<AddIcon />} variant="outlined">
-                        Add Duration
-                      </Button>
-                    </Box>
-                  </Box>
-
-                  {/* Tax Type - Single Row */}
-                  <FormControl fullWidth>
-                    <InputLabel>Tax Type</InputLabel>
-                    <Select
-                      value={formData.taxType}
-                      onChange={handleSelectChange('taxType')}
-                      label="Tax Type"
-                      sx={{
-                        borderRadius: 2,
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#008d80',
-                          borderWidth: 2,
-                        },
-                      }}
-                    >
-                      <MenuItem value="non-taxable">Non-Taxable</MenuItem>
-                      <MenuItem value="taxable">Taxable (13% HST)</MenuItem>
-                    </Select>
-                  </FormControl>
-
-                  {/* Buffer Time - Single Row */}
-                  <TextField
-                    fullWidth
-                    label="Buffer Time (minutes)"
-                    type="number"
-                    value={formData.bufferTime || 0}
-                    onChange={handleChange('bufferTime')}
-                    helperText="Preparation time before/after session"
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: 2,
-                        fontSize: '1rem',
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#008d80',
-                          borderWidth: 2,
-                        },
-                      },
-                      '& .MuiInputLabel-root.Mui-focused': {
-                        color: '#008d80',
-                      },
-                    }}
-                  />
-
-                  {/* Package Options - Single Row */}
-                  <Box>
-                    <BrandTypography variant="text" sx={{ mb: 2, fontWeight: 600 }}>
-                      Package Options (Optional)
-                    </BrandTypography>
-                    {formData.packageOptions?.map((pkg, index) => (
-                      <Box key={index} sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'flex-start' }}>
-                        <TextField
-                          label="Package Title"
-                          value={pkg.title}
-                          onChange={(e) => {
-                            const newPackages = [...(formData.packageOptions || [])];
-                            newPackages[index].title = e.target.value;
-                            setFormData(prev => ({ ...prev, packageOptions: newPackages }));
-                          }}
-                          sx={{ width: 200 }}
-                        />
-                        <TextField
-                          label="Number of Sessions"
-                          type="number"
-                          value={pkg.sessions}
-                          onChange={(e) => {
-                            const newPackages = [...(formData.packageOptions || [])];
-                            newPackages[index].sessions = parseInt(e.target.value);
-                            setFormData(prev => ({ ...prev, packageOptions: newPackages }));
-                          }}
-                          sx={{ width: 150 }}
-                        />
-                        <TextField
-                          label="Package Price ($)"
-                          type="number"
-                          value={pkg.price}
-                          onChange={(e) => {
-                            const newPackages = [...(formData.packageOptions || [])];
-                            newPackages[index].price = parseFloat(e.target.value);
-                            setFormData(prev => ({ ...prev, packageOptions: newPackages }));
-                          }}
-                          sx={{ width: 150 }}
-                        />
-                        <Box sx={{ display: 'flex', alignItems: 'center', height: 56 }}>
-                          <IconButton onClick={() => removePackage(index)} color="error">
-                            <DeleteIcon />
-                          </IconButton>
-                        </Box>
-                      </Box>
-                    ))}
-                    
-                    <Box sx={{ display: 'flex', gap: 2, mb: 3, alignItems: 'flex-start' }}>
-                      <TextField
-                        label="Package Title"
-                        value={newPackage.title}
-                        onChange={(e) => setNewPackage(prev => ({ ...prev, title: e.target.value }))}
-                        sx={{ width: 200 }}
-                      />
-                      <TextField
-                        label="Sessions"
-                        type="number"
-                        value={newPackage.sessions}
-                        onChange={(e) => setNewPackage(prev => ({ ...prev, sessions: parseInt(e.target.value) }))}
-                        sx={{ width: 100 }}
-                      />
-                      <TextField
-                        label="Price ($)"
-                        type="number"
-                        value={newPackage.price}
-                        onChange={(e) => setNewPackage(prev => ({ ...prev, price: parseFloat(e.target.value) }))}
-                        sx={{ width: 120 }}
-                      />
-                      <Box sx={{ display: 'flex', alignItems: 'center', height: 56 }}>
-                        <Button onClick={addPackage} startIcon={<AddIcon />} variant="outlined">
-                          Add Package
-                        </Button>
-                      </Box>
-                    </Box>
-                  </Box>
-
-                  {/* Special Offer - Single Row */}
-                  <TextField
-                    fullWidth
-                    label="Special Offer (Optional)"
-                    placeholder="e.g., Intro Rate Valid to June 30"
-                    value={formData.specialOffer || ''}
-                    onChange={handleChange('specialOffer')}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: 2,
-                        fontSize: '1rem',
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#008d80',
-                          borderWidth: 2,
-                        },
-                      },
-                      '& .MuiInputLabel-root.Mui-focused': {
-                        color: '#008d80',
-                      },
-                    }}
-                  />
-                </Box>
-              </Paper>
-            </Box>
-          </TabPanel>
-
-          {/* Tab 3: Audience & Treatment Details */}
-          <TabPanel value={activeTab} index={2}>
             <Box sx={{ width: '100%', px: { xs: 2, sm: 3, md: 4 } }}>
               <Box sx={{ mb: 4 }}>
                 <BrandTypography variant="subheader" sx={{ mb: 2, color: 'primary.main' }}>
@@ -1221,8 +1182,8 @@ export default function ServiceForm({ service, onSave, onCancel, categories, sta
             </Box>
           </TabPanel>
 
-          {/* Tab 4: Session Experience */}
-          <TabPanel value={activeTab} index={3}>
+          {/* Tab 3: Session Experience */}
+          <TabPanel value={activeTab} index={2}>
             <Box sx={{ width: '100%', px: { xs: 2, sm: 3, md: 4 } }}>
               <Box sx={{ mb: 4 }}>
                 <BrandTypography variant="subheader" sx={{ mb: 2, color: 'primary.main' }}>
@@ -1424,8 +1385,8 @@ export default function ServiceForm({ service, onSave, onCancel, categories, sta
             </Box>
           </TabPanel>
 
-          {/* Tab 5: Visuals & Media */}
-          <TabPanel value={activeTab} index={4}>
+          {/* Tab 4: Visuals & Media */}
+          <TabPanel value={activeTab} index={3}>
             <Box sx={{ width: '100%', px: { xs: 2, sm: 3, md: 4 } }}>
               <Box sx={{ mb: 4 }}>
                 <BrandTypography variant="subheader" sx={{ mb: 2, color: 'primary.main' }}>
@@ -1695,15 +1656,15 @@ export default function ServiceForm({ service, onSave, onCancel, categories, sta
             </Box>
           </TabPanel>
 
-          {/* Tab 6: Staff & Availability */}
-          <TabPanel value={activeTab} index={5}>
+          {/* Tab 5: Staff & Availability (Read-only from Square) */}
+          <TabPanel value={activeTab} index={4}>
             <Box sx={{ width: '100%', px: { xs: 2, sm: 3, md: 4 } }}>
               <Box sx={{ mb: 4 }}>
                 <BrandTypography variant="subheader" sx={{ mb: 2, color: 'primary.main' }}>
                   Staff & Availability
                 </BrandTypography>
                 <BrandTypography variant="text" sx={{ color: 'text.secondary', mb: 3 }}>
-                  Connect people to treatments
+                  Staff assigned to this service in Square
                 </BrandTypography>
               </Box>
 
@@ -1714,218 +1675,21 @@ export default function ServiceForm({ service, onSave, onCancel, categories, sta
                   </Avatar>
                   <Box>
                     <BrandTypography variant="subheader" sx={{ color: 'primary.main' }}>
-                      Staff & Availability
+                      Square Staff Assignments
                     </BrandTypography>
                     <BrandTypography variant="caption" sx={{ color: 'text.secondary' }}>
-                      Connect people to treatments
+                      Showing staff assigned to this service in Square
                     </BrandTypography>
                   </Box>
                 </Box>
 
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%' }}>
-                  {/* Practitioners - Single Row */}
-                  <Box>
-                    <BrandTypography variant="text" sx={{ mb: 2, fontWeight: 600 }}>
-                      Practitioners Offering This Service
-                    </BrandTypography>
-                    <FormControl fullWidth>
-                      <InputLabel>Practitioners Offering This Service</InputLabel>
-                      <Select
-                        multiple
-                        value={formData.practitioners}
-                        onChange={(e) => handleArrayChange('practitioners', e.target.value as string[])}
-                        input={<OutlinedInput label="Practitioners Offering This Service" />}
-                        renderValue={(selected) => (
-                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                            {selected.map((value) => {
-                              const staffMember = staff.find(s => s.id === value);
-                              return (
-                                <Chip 
-                                  key={value} 
-                                  label={staffMember?.name || value} 
-                                  size="small"
-                                  sx={{ 
-                                    bgcolor: '#008d80',
-                                    color: 'white',
-                                    '& .MuiChip-deleteIcon': {
-                                      color: 'white',
-                                      '&:hover': {
-                                        color: 'rgba(255, 255, 255, 0.7)'
-                                      }
-                                    }
-                                  }}
-                                />
-                              );
-                            })}
-                          </Box>
-                        )}
-                        sx={{
-                          borderRadius: 2,
-                          fontSize: '1rem',
-                          '&.Mui-focused fieldset': {
-                            borderColor: '#008d80',
-                            borderWidth: 2,
-                          },
-                          '& .MuiInputLabel-root.Mui-focused': {
-                            color: '#008d80',
-                          },
-                        }}
-                      >
-                        {staff.length > 0 ? (
-                          staff.map((staffMember) => (
-                            <MenuItem key={staffMember.id} value={staffMember.id}>
-                              <Checkbox checked={formData.practitioners.indexOf(staffMember.id) > -1} />
-                              <ListItemText primary={staffMember.name} secondary={staffMember.title} />
-                            </MenuItem>
-                          ))
-                        ) : (
-                          <MenuItem disabled>
-                            <ListItemText 
-                              primary="No staff members found" 
-                              secondary="Add staff members in the Staff Management section first" 
-                            />
-                          </MenuItem>
-                        )}
-                      </Select>
-                    </FormControl>
-                    {formData.practitioners.length === 0 && (
-                      <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
-                        <BrandTypography variant="caption" sx={{ color: 'text.secondary' }}>
-                          No practitioners selected yet. Choose which staff members offer this service.
-                        </BrandTypography>
-                      </Box>
-                    )}
-                  </Box>
-                </Box>
+                <ServiceStaffFromSquare service={service || null} />
               </Paper>
             </Box>
           </TabPanel>
 
-          {/* Tab 7: Booking & Integration */}
-          <TabPanel value={activeTab} index={6}>
-            <Box sx={{ width: '100%', px: { xs: 2, sm: 3, md: 4 } }}>
-              <Box sx={{ mb: 4 }}>
-                <BrandTypography variant="subheader" sx={{ mb: 2, color: 'primary.main' }}>
-                  Booking & Integration
-                </BrandTypography>
-                <BrandTypography variant="text" sx={{ color: 'text.secondary', mb: 3 }}>
-                  Link to online scheduling tools
-                </BrandTypography>
-              </Box>
-
-              <Paper elevation={1} sx={{ p: { xs: 3, sm: 4, md: 5 }, mb: 4, borderRadius: 3, border: '1px solid', borderColor: 'grey.200' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                  <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>
-                    <LinkIcon />
-                  </Avatar>
-                  <Box>
-                    <BrandTypography variant="subheader" sx={{ color: 'primary.main' }}>
-                      Booking & Integration
-                    </BrandTypography>
-                    <BrandTypography variant="caption" sx={{ color: 'text.secondary' }}>
-                      Link to online scheduling tools
-                    </BrandTypography>
-                  </Box>
-                </Box>
-
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%' }}>
-                  {/* Booking Link - Single Row */}
-                  <Box>
-                    <BrandTypography variant="text" sx={{ mb: 2, fontWeight: 600 }}>
-                      Booking Link
-                    </BrandTypography>
-                    <TextField
-                      fullWidth
-                      label="Booking Link"
-                      placeholder="Direct URL to Square, JaneApp, or other system"
-                      value={formData.bookingLink || ''}
-                      onChange={handleChange('bookingLink')}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <LinkIcon sx={{ color: 'primary.main' }} />
-                          </InputAdornment>
-                        ),
-                      }}
-                      sx={{
-                        '& .MuiOutlinedInput-root': {
-                          borderRadius: 2,
-                          fontSize: '1rem',
-                          '&.Mui-focused fieldset': {
-                            borderColor: '#008d80',
-                            borderWidth: 2,
-                          },
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                          color: '#008d80',
-                        },
-                      }}
-                    />
-                  </Box>
-
-
-                  {/* Pre-Booking Note - Single Row */}
-                  <Box>
-                    <BrandTypography variant="text" sx={{ mb: 2, fontWeight: 600 }}>
-                      Pre-Booking Note (Optional)
-                    </BrandTypography>
-                    <TextField
-                      fullWidth
-                      label="Pre-Booking Note (Optional)"
-                      placeholder="e.g., Please arrive 10 min early"
-                      value={formData.preBookingNote || ''}
-                      onChange={handleChange('preBookingNote')}
-                      sx={{
-                        '& .MuiOutlinedInput-root': {
-                          borderRadius: 2,
-                          fontSize: '1rem',
-                          '&.Mui-focused fieldset': {
-                            borderColor: '#008d80',
-                            borderWidth: 2,
-                          },
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                          color: '#008d80',
-                        },
-                      }}
-                    />
-                  </Box>
-
-                  {/* Post-Booking Instructions - Single Row */}
-                  <Box>
-                    <BrandTypography variant="text" sx={{ mb: 2, fontWeight: 600 }}>
-                      Post-Booking Instructions (Optional)
-                    </BrandTypography>
-                    <TextField
-                      fullWidth
-                      multiline
-                      rows={3}
-                      label="Post-Booking Instructions (Optional)"
-                      placeholder="Follow-up message after booking"
-                      value={formData.postBookingInstructions || ''}
-                      onChange={handleChange('postBookingInstructions')}
-                      sx={{
-                        '& .MuiOutlinedInput-root': {
-                          borderRadius: 2,
-                          fontSize: '1rem',
-                          '&.Mui-focused fieldset': {
-                            borderColor: '#008d80',
-                            borderWidth: 2,
-                          },
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                          color: '#008d80',
-                        },
-                      }}
-                    />
-                  </Box>
-                </Box>
-              </Paper>
-            </Box>
-          </TabPanel>
-
-          {/* Tab 8: SEO & Meta */}
-          <TabPanel value={activeTab} index={7}>
+          {/* Tab 6: SEO & Meta */}
+          <TabPanel value={activeTab} index={5}>
             <Box sx={{ width: '100%', px: { xs: 2, sm: 3, md: 4 } }}>
               <Box sx={{ mb: 4 }}>
                 <BrandTypography variant="subheader" sx={{ mb: 2, color: 'primary.main' }}>
@@ -2135,8 +1899,8 @@ export default function ServiceForm({ service, onSave, onCancel, categories, sta
             </Box>
           </TabPanel>
 
-          {/* Tab 9: Internal & Compliance */}
-          <TabPanel value={activeTab} index={8}>
+          {/* Tab 7: Internal & Compliance */}
+          <TabPanel value={activeTab} index={6}>
             <Box sx={{ width: '100%', px: { xs: 2, sm: 3, md: 4 } }}>
               <Box sx={{ mb: 4 }}>
                 <BrandTypography variant="subheader" sx={{ mb: 2, color: 'primary.main' }}>

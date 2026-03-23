@@ -712,7 +712,7 @@ export default function WebsiteHeader({ initialCategories, initialServices, init
               
               <Button
                 component={Link}
-                href="/contact"
+                href="/book"
                 startIcon={<Phone size={18} weight="bold" />}
                 sx={{ 
                   ml: { md: 1, lg: 2 },

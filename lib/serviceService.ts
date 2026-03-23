@@ -54,6 +54,18 @@ export interface Service {
   bookingLink?: string;
   preBookingNote?: string;
   postBookingInstructions?: string;
+  squareMapping?: {
+    squareItemId: string;
+    squareItemName: string;
+    variations: Array<{
+      variationId: string;
+      variationName: string;
+      version: string;
+      durationMinutes: number | null;
+      priceCents: number | null;
+      currency: string;
+    }>;
+  };
   
   // SEO & Meta
   seoTitle?: string;

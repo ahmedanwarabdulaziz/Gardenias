@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import ThemeProvider from '@/components/ThemeProvider';
 import ConditionalLayout from '@/components/shared/ConditionalLayout';
 import { getServerNavigationData, ServerCategory, ServerService, ServerStaffMember } from '@/lib/serverDataService';
+import { SITE_CONFIG } from '@/lib/seo/config';
 import '@/styles/globals.css';
 import '@/styles/accessibility.css';
 
@@ -9,6 +10,29 @@ export const metadata: Metadata = {
   title: 'Gardenias Healthcare - Professional Medical Services',
   description: 'Professional healthcare services with modern medical facilities. Expert doctors, advanced treatments, and compassionate care for all your medical needs.',
   keywords: 'healthcare, medical, doctor, hospital, clinic, medical treatment, healthcare provider, medical consultation, emergency care, specialized medicine',
+  metadataBase: new URL(SITE_CONFIG.baseUrl),
+  openGraph: {
+    type: 'website',
+    locale: 'en_CA',
+    url: SITE_CONFIG.baseUrl,
+    siteName: SITE_CONFIG.name,
+    title: 'Gardenias Healthcare - Professional Medical Services',
+    description: 'Professional healthcare services with modern medical facilities. Expert doctors, advanced treatments, and compassionate care for all your medical needs.',
+    images: [
+      {
+        url: SITE_CONFIG.defaultImage,
+        width: 1200,
+        height: 630,
+        alt: 'Gardenias Healthcare Logo',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Gardenias Healthcare - Professional Medical Services',
+    description: 'Professional healthcare services with modern medical facilities. Expert doctors, advanced treatments, and compassionate care for all your medical needs.',
+    images: [SITE_CONFIG.defaultImage],
+  },
   icons: {
     icon: [
       { 

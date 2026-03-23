@@ -27,6 +27,7 @@ import {
   ExitToApp as LogoutIcon,
   Share as ShareIcon,
   Search as SearchIcon,
+  Storefront as SquareIcon,
 } from '@mui/icons-material';
 import Link from 'next/link';
 import ProtectedRoute from '@/components/admin/ProtectedRoute';
@@ -35,13 +36,14 @@ const drawerWidth = 240;
 
 const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, href: '/admin/dashboard' },
-  { text: 'Patients', icon: <PeopleIcon />, href: '/admin/dashboard/patients' },
+
   { text: 'Staff', icon: <PeopleIcon />, href: '/admin/dashboard/staff' },
   { text: 'Categories', icon: <CategoryIcon />, href: '/admin/dashboard/categories' },
   { text: 'Services', icon: <ServiceIcon />, href: '/admin/dashboard/services' },
   { text: 'Social Media', icon: <ShareIcon />, href: '/admin/dashboard/social-media' },
   { text: 'SEO Settings', icon: <SearchIcon />, href: '/admin/dashboard/seo' },
-  { text: 'Appointments', icon: <CalendarIcon />, href: '/admin/dashboard/appointments' },
+  { text: 'Square', icon: <SquareIcon />, href: '/admin/dashboard/square' },
+
   { text: 'Analytics', icon: <AnalyticsIcon />, href: '/admin/dashboard/analytics' },
   { text: 'Settings', icon: <SettingsIcon />, href: '/admin/dashboard/settings' },
 ];
@@ -76,7 +78,7 @@ export default function DashboardLayout({
         ))}
         <Divider sx={{ my: 1 }} />
         <ListItem disablePadding>
-          <ListItemButton>
+          <ListItemButton component={Link} href="/">
             <ListItemIcon>
               <LogoutIcon />
             </ListItemIcon>

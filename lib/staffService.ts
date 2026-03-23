@@ -43,6 +43,7 @@ export interface StaffMember {
   }>;
   associations?: string;
   bookingLink?: string;
+  squareTeamMemberId?: string;
 }
 
 export class StaffService {
