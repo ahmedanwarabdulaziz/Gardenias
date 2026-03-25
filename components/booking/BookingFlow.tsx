@@ -32,7 +32,10 @@ import {
   ExpandMore,
   ExpandLess,
   AutoAwesome,
+  CreditCard as CreditCardIcon,
+  Lock as LockIcon,
 } from '@mui/icons-material';
+import SquareCardForm from './SquareCardForm';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -141,6 +144,7 @@ const pathASteps = [
   { label: 'Choose Practitioner', icon: <Person /> },
   { label: 'Pick Date & Time', icon: <CalendarMonth /> },
   { label: 'Your Details', icon: <PersonOutline /> },
+  { label: 'Payment', icon: <CreditCardIcon /> },
   { label: 'Confirmation', icon: <CheckCircle /> },
 ];
 
@@ -150,6 +154,7 @@ const pathBSteps = [
   { label: 'Select Service', icon: <Spa /> },
   { label: 'Pick Date & Time', icon: <CalendarMonth /> },
   { label: 'Your Details', icon: <PersonOutline /> },
+  { label: 'Payment', icon: <CreditCardIcon /> },
   { label: 'Confirmation', icon: <CheckCircle /> },
 ];
 
@@ -227,6 +232,14 @@ export default function BookingFlow() {
   const [loadingDates, setLoadingDates] = useState(false);
   // Tracks days where selected staff is full BUT another practitioner is free
   const [dateAnyStaffAvail, setDateAnyStaffAvail] = useState<Record<string, boolean>>({});
+
+  // ─── Card / Payment State ──────────────────────────────────────────────────
+  const [savedCardId, setSavedCardId] = useState<string | null>(null);
+  const [savedCustomerId, setSavedCustomerId] = useState<string | null>(null);
+  const [cardSaving, setCardSaving] = useState(false);
+  const [cardError, setCardError] = useState<string | null>(null);
+  const [cardSaved, setCardSaved] = useState(false);
+
   // Calendar state: the Monday that starts the currently-displayed week
   const [calendarWeekStart, setCalendarWeekStart] = useState<Date>(() => {
     const d = new Date();
@@ -380,7 +393,8 @@ export default function BookingFlow() {
       const startDate = new Date(date);
       startDate.setHours(0, 0, 0, 0);
       const endDate = new Date(date);
-      endDate.setHours(23, 59, 59, 999);
+      endDate.setDate(endDate.getDate() + 1);
+      endDate.setHours(0, 0, 0, 0);
 
       const res = await fetch('/api/square/availability', {
         method: 'POST',
@@ -424,7 +438,7 @@ export default function BookingFlow() {
       const key = `${y}-${m}-${d}`;
       if (day < today) { checks[key] = 'unavailable'; continue; }
       const start = new Date(day); start.setHours(0, 0, 0, 0);
-      const end = new Date(day); end.setHours(23, 59, 59, 999);
+      const end = new Date(day); end.setDate(end.getDate() + 1); end.setHours(0, 0, 0, 0);
       promises.push(
         fetch('/api/square/availability', {
           method: 'POST',
@@ -456,7 +470,7 @@ export default function BookingFlow() {
         unavailableKeys.map(key => {
           const [y, m, d] = key.split('-').map(Number);
           const start = new Date(y, m - 1, d); start.setHours(0, 0, 0, 0);
-          const end = new Date(y, m - 1, d); end.setHours(23, 59, 59, 999);
+          const end = new Date(y, m - 1, d + 1); end.setHours(0, 0, 0, 0);
           return fetch('/api/square/availability', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -480,6 +494,35 @@ export default function BookingFlow() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVariation, selectedStaff, locationId]);
 
+  // Save card on file for no-show protection
+  const saveCardOnFile = async (token: string, verificationToken: string) => {
+    setCardSaving(true);
+    setCardError(null);
+    try {
+      const res = await fetch('/api/square/save-card', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sourceId: token,
+          verificationToken,
+          customerFirstName: customerDetails.firstName,
+          customerLastName: customerDetails.lastName,
+          customerEmail: customerDetails.email,
+          customerPhone: customerDetails.phone,
+        }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setSavedCardId(data.cardId);
+      setSavedCustomerId(data.customerId);
+      setCardSaved(true);
+    } catch (err) {
+      setCardError(err instanceof Error ? err.message : 'Failed to save card');
+    } finally {
+      setCardSaving(false);
+    }
+  };
+
   // Create booking
   const createBooking = async () => {
     if (!selectedSlot || !selectedVariation) return;
@@ -502,12 +545,14 @@ export default function BookingFlow() {
           customerEmail: customerDetails.email,
           customerPhone: customerDetails.phone,
           customerNote: customerDetails.note,
+          customerId: savedCustomerId,
+          cardId: savedCardId,
         }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setBookingResult(data.booking);
-      setActiveStep(5); // Confirmation step
+      setActiveStep(6); // Confirmation step (shifted to 6)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create booking');
     } finally {
@@ -546,7 +591,10 @@ export default function BookingFlow() {
       // After date/time — go to details
       setActiveStep(4);
     } else if (activeStep === 4) {
-      // Submit booking
+      // After customer details — go to payment
+      setActiveStep(5);
+    } else if (activeStep === 5) {
+      // After payment — submit booking
       createBooking();
     } else {
       setActiveStep(prev => prev + 1);
@@ -555,6 +603,7 @@ export default function BookingFlow() {
 
   const handleBack = () => {
     setError(null);
+    setCardError(null);
     if (activeStep === 1 && !searchParams.get('service')) {
       // Go back to path selection
       setBookingPath(null);
@@ -570,6 +619,7 @@ export default function BookingFlow() {
     if (activeStep === 2 && bookingPath === 'service') return true; // staff optional
     if (activeStep === 3) return !!selectedSlot;
     if (activeStep === 4) return !!(customerDetails.firstName && customerDetails.email);
+    if (activeStep === 5) return cardSaved; // card must be saved
     return false;
   };
 
@@ -1804,9 +1854,202 @@ export default function BookingFlow() {
         )}
 
         {/* ═══════════════════════════════════════════════════════════ */}
-        {/* STEP 5: Confirmation                                       */}
+        {/* STEP 5: Payment Details (No-Show Protection)               */}
         {/* ═══════════════════════════════════════════════════════════ */}
         {activeStep === 5 && (
+          <Fade in>
+            <Card sx={cardStyle}>
+              <Typography sx={stepTitle}>Payment Details</Typography>
+              <Typography sx={stepSubtitle}>
+                A credit card is required to secure your booking
+              </Typography>
+
+              {/* Info Alert */}
+              <Alert
+                severity="info"
+                icon={<LockIcon fontSize="small" />}
+                sx={{
+                  mb: 4,
+                  borderRadius: '12px',
+                  bgcolor: 'rgba(0,141,128,0.05)',
+                  border: '1px solid rgba(0,141,128,0.15)',
+                  '& .MuiAlert-icon': { color: '#008d80' },
+                  '& .MuiAlert-message': {
+                    fontFamily: '"Source Sans Pro", sans-serif',
+                    fontSize: '0.9rem',
+                    color: '#555',
+                  },
+                }}
+              >
+                Your card will <strong>not be charged</strong> at this time. It is securely stored
+                for no-show protection only. A fee may apply if you miss your appointment
+                without cancelling in advance.
+              </Alert>
+
+              {/* Booking Summary */}
+              <Box
+                sx={{
+                  p: 2.5,
+                  borderRadius: '14px',
+                  bgcolor: 'rgba(0,141,128,0.04)',
+                  border: '1px solid rgba(0,141,128,0.1)',
+                  mb: 4,
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: '"Source Sans Pro", sans-serif',
+                    fontWeight: 600,
+                    fontSize: '0.9rem',
+                    color: '#008d80',
+                    mb: 1,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  Booking Summary
+                </Typography>
+                <Typography sx={{ fontFamily: '"Source Sans Pro", sans-serif', fontWeight: 600, color: '#333' }}>
+                  {selectedService?.name}{' '}
+                  {selectedVariation?.variationName && selectedVariation.variationName !== 'Regular'
+                    ? `— ${selectedVariation.variationName}`
+                    : ''}
+                </Typography>
+                <Typography sx={{ fontFamily: '"Source Sans Pro", sans-serif', color: '#666', fontSize: '0.95rem' }}>
+                  {selectedStaff ? `with ${selectedStaff.displayName}` : 'Any available practitioner'}
+                  {' • '}
+                  {selectedSlot
+                    ? new Date(selectedSlot.startAt).toLocaleDateString('en-CA', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                      })
+                    : ''}
+                  {' at '}
+                  {selectedSlot ? formatSlotTime(selectedSlot.startAt) : ''}
+                </Typography>
+                {selectedVariation && (
+                  <Typography
+                    sx={{
+                      fontFamily: '"Source Sans Pro", sans-serif',
+                      fontWeight: 700,
+                      color: '#008d80',
+                      mt: 0.5,
+                    }}
+                  >
+                    {formatPrice(selectedVariation.priceCents, selectedVariation.currency)}
+                    {selectedVariation.durationMinutes
+                      ? ` • ${formatDuration(selectedVariation.durationMinutes)}`
+                      : ''}
+                  </Typography>
+                )}
+              </Box>
+
+              {/* Card Error */}
+              {cardError && (
+                <Alert
+                  severity="error"
+                  sx={{ mb: 3, borderRadius: '12px' }}
+                  onClose={() => setCardError(null)}
+                >
+                  {cardError}
+                </Alert>
+              )}
+
+              {/* Card Saved Success */}
+              {cardSaved ? (
+                <Box
+                  sx={{
+                    textAlign: 'center',
+                    py: 4,
+                    px: 3,
+                    borderRadius: '16px',
+                    bgcolor: 'rgba(0,141,128,0.04)',
+                    border: '2px solid rgba(0,141,128,0.2)',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 60,
+                      height: 60,
+                      borderRadius: '50%',
+                      bgcolor: 'rgba(0,141,128,0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mx: 'auto',
+                      mb: 2,
+                    }}
+                  >
+                    <CheckCircle sx={{ fontSize: 36, color: '#008d80' }} />
+                  </Box>
+                  <Typography
+                    sx={{
+                      fontFamily: '"Playfair Display", serif',
+                      fontWeight: 700,
+                      fontSize: '1.3rem',
+                      color: '#008d80',
+                      mb: 1,
+                    }}
+                  >
+                    Card Saved Successfully
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontFamily: '"Source Sans Pro", sans-serif',
+                      fontSize: '0.95rem',
+                      color: '#666',
+                    }}
+                  >
+                    Your card has been securely stored. Click &quot;Confirm Booking&quot; to complete
+                    your appointment.
+                  </Typography>
+                </Box>
+              ) : (
+                /* Square Web Payments SDK Card Form */
+                <Box>
+                  <SquareCardForm
+                    applicationId={process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID!}
+                    locationId={locationId || ''}
+                    loading={cardSaving}
+                    customerName={`${customerDetails.firstName} ${customerDetails.lastName}`.trim()}
+                    onTokenize={async (token, verificationToken) => {
+                      await saveCardOnFile(token, verificationToken);
+                    }}
+                    onError={(msg) => setCardError(msg)}
+                  />
+
+                  {/* Security note */}
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 0.8,
+                      mt: 2.5,
+                    }}
+                  >
+                    <LockIcon sx={{ fontSize: 14, color: '#aaa' }} />
+                    <Typography
+                      sx={{
+                        fontFamily: '"Source Sans Pro", sans-serif',
+                        fontSize: '0.8rem',
+                        color: '#aaa',
+                      }}
+                    >
+                      Secured by Square. Your card details are encrypted and never stored on our servers.
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
+            </Card>
+          </Fade>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════ */}
+        {/* STEP 6: Confirmation                                       */}
+        {/* ═══════════════════════════════════════════════════════════ */}
+        {activeStep === 6 && (
           <Fade in>
             <Card sx={{ ...cardStyle, textAlign: 'center', py: { xs: 3, md: 5 } }}>
               <Box
@@ -1953,7 +2196,7 @@ export default function BookingFlow() {
         )}
 
         {/* ─── Navigation Buttons ───────────────────────────────────── */}
-        {activeStep > 0 && activeStep < 5 && (
+        {activeStep > 0 && activeStep < 6 && (
           <Box
             sx={{
               display: 'flex',
@@ -2011,7 +2254,7 @@ export default function BookingFlow() {
                 },
               }}
             >
-              {activeStep === 4 ? 'Confirm Booking' : 'Continue'}
+              {activeStep === 5 ? 'Confirm Booking' : 'Continue'}
             </Button>
           </Box>
         )}

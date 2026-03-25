@@ -45,10 +45,19 @@ export async function POST(request: NextRequest) {
     const availabilities = serializeSquareData(response.availabilities || []) as unknown[];
 
     return NextResponse.json({ availabilities });
-  } catch (error) {
-    console.error('Error searching availability:', error);
+  } catch (error: unknown) {
+    // Log full details to help debug Square API issues
+    const errObj = error as Record<string, unknown>;
+    console.error('Error searching availability:', {
+      message: errObj?.message || error,
+      statusCode: errObj?.statusCode,
+      body: errObj?.body,
+      errors: errObj?.errors,
+    });
+    
+    const errorMessage = error instanceof Error ? error.message : 'Failed to search availability';
     return NextResponse.json(
-      { error: 'Failed to search availability', details: error instanceof Error ? error.message : JSON.stringify(error) },
+      { error: errorMessage },
       { status: 500 }
     );
   }

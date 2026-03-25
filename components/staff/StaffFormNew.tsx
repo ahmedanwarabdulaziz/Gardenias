@@ -224,32 +224,32 @@ export default function StaffFormNew({ staff, onSave, onCancel }: StaffFormProps
         return undefined;
       
       case 'email':
-        if (!value.trim()) return 'Email is required';
+        if (!value || !value.trim()) return undefined;
         if (!validateEmail(value)) return 'Please enter a valid email address';
         return undefined;
       
       case 'phone':
-        if (!value.trim()) return 'Phone number is required';
+        if (!value || !value.trim()) return undefined;
         if (!validatePhone(value)) return 'Please enter a valid phone number';
         return undefined;
       
       case 'title':
-        if (!value.trim()) return 'Job title is required';
+        if (!value || !value.trim()) return undefined;
         if (!validateTitle(value)) return 'Title must be at least 2 characters';
         return undefined;
       
       case 'shortDescription':
-        if (!value.trim()) return 'Description is required';
+        if (!value || !value.trim()) return undefined;
         if (!validateDescription(value)) return 'Description must be at least 10 characters';
         return undefined;
       
       case 'shortBio':
-        if (!value.trim()) return 'Short bio is required';
+        if (!value || !value.trim()) return undefined;
         if (!validateShortBio(value)) return 'Short bio must be 220-300 characters';
         return undefined;
       
       case 'fullBiography':
-        if (!value.trim()) return 'Full biography is required';
+        if (!value || !value.trim()) return undefined;
         if (!validateFullBiography(value)) return 'Full biography must be 800-1200 characters';
         return undefined;
       
@@ -377,7 +377,7 @@ export default function StaffFormNew({ staff, onSave, onCancel }: StaffFormProps
     const newErrors: Partial<Record<keyof StaffFormData, string>> = {};
     
     // Validate required fields
-    const requiredFields: (keyof StaffFormData)[] = ['name', 'email', 'phone', 'title', 'shortDescription'];
+    const requiredFields: (keyof StaffFormData)[] = ['name'];
     
     requiredFields.forEach(field => {
       const error = validateField(field, formData[field] as string);
@@ -611,7 +611,7 @@ export default function StaffFormNew({ staff, onSave, onCancel }: StaffFormProps
             {/* Email Field */}
             <TextField
               fullWidth
-              label="Email Address *"
+              label="Email Address"
               type="email"
               value={formData.email}
               onChange={handleChange('email')}
@@ -640,7 +640,7 @@ export default function StaffFormNew({ staff, onSave, onCancel }: StaffFormProps
             {/* Phone Field */}
             <TextField
               fullWidth
-              label="Phone Number *"
+              label="Phone Number"
               value={formData.phone}
               onChange={handleChange('phone')}
               onBlur={handleBlur('phone')}
@@ -668,7 +668,7 @@ export default function StaffFormNew({ staff, onSave, onCancel }: StaffFormProps
             {/* Title Field */}
             <TextField
               fullWidth
-              label="Job Title *"
+              label="Job Title"
               value={formData.title}
               onChange={handleChange('title')}
               onBlur={handleBlur('title')}
@@ -696,7 +696,7 @@ export default function StaffFormNew({ staff, onSave, onCancel }: StaffFormProps
             {/* Description Field */}
             <TextField
               fullWidth
-              label="Professional Description *"
+              label="Professional Description"
               multiline
               rows={4}
               value={formData.shortDescription}
@@ -761,7 +761,7 @@ export default function StaffFormNew({ staff, onSave, onCancel }: StaffFormProps
             {/* Short Bio */}
             <TextField
               fullWidth
-              label="Short Bio *"
+              label="Short Bio"
               multiline
               rows={3}
               value={formData.shortBio || ''}
@@ -770,7 +770,7 @@ export default function StaffFormNew({ staff, onSave, onCancel }: StaffFormProps
               error={getFieldError('shortBio')}
               helperText={
                 getFieldHelperText('shortBio') || 
-                `${(formData.shortBio || '').length}/300 characters (220-300 required)`
+                `${(formData.shortBio || '').length}/300 characters (220-300 optional)`
               }
               InputProps={{
                 startAdornment: (
@@ -794,7 +794,7 @@ export default function StaffFormNew({ staff, onSave, onCancel }: StaffFormProps
             {/* Full Biography */}
             <TextField
               fullWidth
-              label="Full Biography *"
+              label="Full Biography"
               multiline
               rows={6}
               value={formData.fullBiography || ''}
@@ -803,7 +803,7 @@ export default function StaffFormNew({ staff, onSave, onCancel }: StaffFormProps
               error={getFieldError('fullBiography')}
               helperText={
                 getFieldHelperText('fullBiography') || 
-                `${(formData.fullBiography || '').length}/1200 characters (800-1200 required)`
+                `${(formData.fullBiography || '').length}/1200 characters (800-1200 optional)`
               }
               InputProps={{
                 startAdornment: (
@@ -827,7 +827,7 @@ export default function StaffFormNew({ staff, onSave, onCancel }: StaffFormProps
             {/* Credentials & Licenses */}
             <TextField
               fullWidth
-              label="Credentials & Licenses *"
+              label="Credentials & Licenses"
               multiline
               rows={3}
               value={formData.credentials || ''}
@@ -928,7 +928,7 @@ export default function StaffFormNew({ staff, onSave, onCancel }: StaffFormProps
             {/* Years of Experience */}
             <TextField
               fullWidth
-              label="Years of Experience *"
+              label="Years of Experience"
               value={formData.yearsOfExperience || ''}
               onChange={handleChange('yearsOfExperience')}
               helperText="Numeric or range (e.g., '10 years +')"

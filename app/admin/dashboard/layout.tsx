@@ -45,6 +45,7 @@ const menuItems = [
   { text: 'Square', icon: <SquareIcon />, href: '/admin/dashboard/square' },
 
   { text: 'Analytics', icon: <AnalyticsIcon />, href: '/admin/dashboard/analytics' },
+  { text: 'Reports', icon: <AnalyticsIcon />, href: '/admin/dashboard/reports' },
   { text: 'Settings', icon: <SettingsIcon />, href: '/admin/dashboard/settings' },
 ];
 

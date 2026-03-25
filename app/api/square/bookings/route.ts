@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
       customerEmail,
       customerPhone,
       customerNote,
+      customerId: existingCustomerId,
     } = body;
 
     if (!locationId || !startAt || !teamMemberId || !serviceVariationId) {
@@ -27,9 +28,9 @@ export async function POST(request: NextRequest) {
     const client = getSquareClient();
 
     // First, create or find the customer
-    let customerId: string | undefined;
+    let customerId: string | undefined = existingCustomerId || undefined;
 
-    if (customerEmail || customerPhone) {
+    if (!customerId && (customerEmail || customerPhone)) {
       // Search for existing customer by email
       if (customerEmail) {
         const searchResponse = await client.customers.search({

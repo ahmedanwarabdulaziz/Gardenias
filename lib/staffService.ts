@@ -103,9 +103,8 @@ export class StaffService {
       console.log('Staff loaded from Firebase:', firebaseStaff.length, 'members');
       return firebaseStaff;
     } catch (error) {
-      console.error('Firebase error, using localStorage:', error);
-      // Fallback to localStorage
-      return this.getMockStaff();
+      console.error('Firebase error, falling back to local storage handler:', error);
+      throw error;
     }
   }
 
@@ -170,11 +169,8 @@ export class StaffService {
       console.log('Staff added to Firebase with ID:', docRef.id);
       return docRef.id;
     } catch (error) {
-      console.error('Firebase error, using localStorage:', error);
-      // Fallback to localStorage
-      const mockId = Date.now().toString();
-      console.log('Staff added to localStorage with ID:', mockId);
-      return mockId;
+      console.error('Firebase error, falling back to local storage handler:', error);
+      throw error;
     }
   }
 
@@ -207,8 +203,8 @@ export class StaffService {
 
       console.log('Staff updated in Firebase:', id);
     } catch (error) {
-      console.error('Firebase error, using localStorage:', error);
-      console.log('Update will be handled locally');
+      console.error('Firebase error, falling back to local storage handler:', error);
+      throw error;
     }
   }
 
@@ -223,8 +219,8 @@ export class StaffService {
 
       console.log('Staff deleted from Firebase:', id);
     } catch (error) {
-      console.error('Firebase error, using localStorage:', error);
-      console.log('Delete will be handled locally');
+      console.error('Firebase error, falling back to local storage handler:', error);
+      throw error;
     }
   }
 
@@ -245,8 +241,8 @@ export class StaffService {
       await Promise.all(updatePromises);
       console.log('Staff order updated in Firebase');
     } catch (error) {
-      console.error('Firebase error, using localStorage:', error);
-      console.log('Order update will be handled locally');
+      console.error('Firebase error, falling back to local storage handler:', error);
+      throw error;
     }
   }
 
@@ -276,8 +272,8 @@ export class StaffService {
       });
       console.log('Staff status toggled in Firebase:', id, 'to', isActive);
     } catch (error) {
-      console.error('Firebase error, using localStorage:', error);
-      console.log('Status toggle will be handled locally');
+      console.error('Firebase error, falling back to local storage handler:', error);
+      throw error;
     }
   }
 }
